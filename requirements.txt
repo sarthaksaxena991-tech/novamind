@@ -1,0 +1,30 @@
+# ================================
+# 🔧 Core Web & CLI Frameworks
+# ================================
+Flask==2.0.3              # Lightweight web framework
+typer==0.3.2              # CLI support, required by spleeter
+click==7.1.2              # CLI dependency for typer 0.3.2
+
+# ================================
+# 🎵 Audio Processing
+# ================================
+spleeter==2.3.0           # Source separation (vocal + music)
+librosa==0.8.0            # Audio feature extraction and analysis
+ffmpeg-python==0.2.0      # FFmpeg wrapper for audio/video handling
+
+# ================================
+# 🤖 Machine Learning / Backend
+# ================================
+tensorflow==2.5.0         # ML backend required by spleeter
+
+# ================================
+# 🔢 Data Manipulation & Math
+# ================================
+numpy==1.19.5             # Numerical computations (compatible with tf 2.5)
+pandas==1.4.4             # Dataframes and manipulation
+
+# ================================
+# ✅ Optional Enhancements
+# ================================
+tqdm==4.64.1              # Nice progress bars (optional, for feedback)
+scipy==1.5.4              # Signal processing & additional audio support
