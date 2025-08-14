@@ -7,32 +7,54 @@
   <link rel="stylesheet" href="./css/main.css">
 </head>
 <body class="dark-theme">
-  <div class="container">
-    <header>
-      <h1 class="glow">Dashboard</h1>
-      <nav>
-        <a href="index.html" class="btn-glow">Home</a>
-        <a href="login.html" class="btn-glow">Logout</a>
+  <div class="dash-shell">
+    <header class="dash-header">
+      <h1 class="dash-title">Dashboard</h1>
+      <nav class="dash-nav">
+        <a href="index.html" class="dash-btn ghost">Home</a>
+        <a href="login.html" class="dash-btn">Logout</a>
       </nav>
     </header>
 
-    <section class="tools-grid">
-      <div class="tool-box">My Projects</div>
-      <div class="tool-box">Recent Files</div>
-      <div class="tool-box">Usage Stats</div>
-      <div class="tool-box">Account</div>
-    </section>
+    <main class="dash-body">
+      <!-- Summary cards -->
+      <section class="dash-metrics">
+        <article class="metric">
+          <div class="metric-value">12</div>
+          <div class="metric-label">Projects</div>
+        </article>
+        <article class="metric">
+          <div class="metric-value">48</div>
+          <div class="metric-label">Files</div>
+        </article>
+        <article class="metric">
+          <div class="metric-value">1.2k</div>
+          <div class="metric-label">API Calls</div>
+        </article>
+        <article class="metric">
+          <div class="metric-value">99.9%</div>
+          <div class="metric-label">Uptime</div>
+        </article>
+      </section>
 
-    <section class="chart-section">
-      <canvas id="userGrowthChart" class="line-chart"></canvas>
-    </section>
+      <!-- Tool shortcuts -->
+      <section class="dash-tools">
+        <a class="tool-tile" href="#"><span>My Projects</span></a>
+        <a class="tool-tile" href="#"><span>Recent Files</span></a>
+        <a class="tool-tile" href="#"><span>Usage Stats</span></a>
+        <a class="tool-tile" href="#"><span>Account</span></a>
+      </section>
 
-    <footer>
-      <p>&copy; 2025 AI Hub. All rights reserved.</p>
-    </footer>
+      <!-- Chart area (optional) -->
+      <section class="dash-charts">
+        <canvas id="userGrowthChart" class="line-chart"></canvas>
+      </section>
+    </main>
+
+    <footer class="dash-footer">© 2025 AI Hub. All rights reserved.</footer>
   </div>
 
-  <!-- JS (only what dashboard needs) -->
+  <!-- Only what dashboard needs -->
   <script src="./js/auth.js"></script>
   <script src="./js/charts.js"></script>
 </body>
