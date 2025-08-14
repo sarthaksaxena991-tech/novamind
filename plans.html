@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Choose Your Plan – AI Hub</title>
+
+  <!-- Inline CSS (no external main.css needed) -->
+  <style>
+    :root{
+      --bg1:#0f0f10;
+      --bg2:#1a1f27;
+      --cyan:#00ffe7;
+      --cyan2:#00f0ff;
+      --mag:#ff64ff;
+      --mint:#00ff78;
+      --text:#e8f1f3;
+      --muted:#cfd6da;
+    }
+
+    /* Page base */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(135deg,var(--bg1),var(--bg2)) fixed;
+    }
+
+    /* Wrapper */
+    #plans{ padding:72px 20px; }
+    .plans-wrap{ max-width:1200px; margin:0 auto; }
+
+    /* Title */
+    .plans-title{
+      margin:0 0 44px;
+      font-weight:800;
+      font-size:2.6rem;
+      text-align:center;
+      color:#fff;
+      text-shadow:0 0 16px rgba(0,255,255,.55);
+    }
+
+    /* EXACTLY three columns on desktop */
+    .plan-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(260px,1fr));
+      gap:28px;
+      align-items:stretch;
+    }
+
+    /* Card */
+    .plan-card{
+      position:relative;
+      padding:28px 24px;
+      border-radius:18px;
+      border:1px solid rgba(0,255,255,.22);
+      background:
+        radial-gradient(120% 120% at 0% 0%, rgba(0,255,255,.06), transparent 60%),
+        radial-gradient(120% 120% at 100% 100%, rgba(255,255,255,.04), transparent 60%),
+        linear-gradient(145deg,#10141a,#1a1f27);
+      color:var(--text);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.55),
+        0 0 22px rgba(0,255,255,.18);
+      transition:transform .22s ease, box-shadow .22s ease;
+      overflow:hidden;
+    }
+    .plan-card:hover{
+      transform:translateY(-6px) scale(1.01);
+      box-shadow:
+        0 18px 40px rgba(0,0,0,.6),
+        0 0 32px rgba(0,255,255,.35);
+    }
+
+    /* Animated glow ring */
+    .plan-card::before{
+      content:"";
+      position:absolute; inset:-1px; border-radius:inherit;
+      background:conic-gradient(from 0deg,
+        rgba(0,255,255,.45),
+        rgba(255,100,255,.45),
+        rgba(0,255,120,.45),
+        rgba(0,255,255,.45));
+      filter:blur(18px); opacity:.18; z-index:0;
+      animation:spinGlow 8s linear infinite;
+    }
+    @keyframes spinGlow{ to{ transform:rotate(360deg);} }
+    .plan-card *{ position:relative; z-index:1; }
+
+    /* Card header */
+    .plan-card h2{
+      margin:0 0 6px;
+      font-size:1.7rem;
+      letter-spacing:.3px;
+      color:var(--cyan);
+      text-shadow:0 0 10px rgba(0,255,255,.5);
+    }
+    .price{
+      margin:12px 0 16px;
+      font-size:2rem;
+      font-weight:800;
+      color:var(--cyan2);
+    }
+
+    /* Features */
+    .plan-card ul{ list-style:none; margin:10px 0 20px; padding:0; }
+    .plan-card ul li{
+      margin:8px 0; color:var(--muted);
+    }
+
+    /* CTA */
+    .plan-btn{
+      display:inline-block;
+      padding:12px 26px;
+      border:none; border-radius:28px;
+      cursor:pointer;
+      background:var(--cyan);
+      color:#031a1a; font-weight:800;
+      transition:transform .15s ease, filter .2s ease;
+    }
+    .plan-btn:hover{ transform:translateY(-2px); filter:brightness(1.12); }
+
+    /* Per-card tint */
+    .plan-basic { box-shadow:0 0 24px rgba(0,255,255,.22), inset 0 0 40px rgba(0,255,255,.05); }
+    .plan-pro    { box-shadow:0 0 24px rgba(255,100,255,.22), inset 0 0 40px rgba(255,100,255,.05); }
+    .plan-ultimate{ box-shadow:0 0 24px rgba(0,255,120,.22), inset 0 0 40px rgba(0,255,120,.05); }
+
+    /* Badge for “Most Popular” */
+    .featured{ transform:translateY(-4px); }
+    .featured .tag{
+      position:absolute; top:14px; right:14px;
+      padding:6px 10px; border-radius:999px;
+      background:rgba(0,255,255,.12);
+      border:1px solid rgba(0,255,255,.35);
+      color:#bffcff; font-weight:700; font-size:.78rem;
+      text-transform:uppercase; letter-spacing:.6px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px){
+      .plan-grid{ grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width: 640px){
+      .plan-grid{ grid-template-columns:1fr; }
+      .featured{ transform:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <section id="plans">
+    <div class="plans-wrap">
+      <h1 class="plans-title">✨ Choose Your Plan ✨</h1>
+
+      <div class="plan-grid">
+        <!-- Basic -->
+        <article class="plan-card plan-basic">
+          <h2>Basic</h2>
+          <p class="price">₹0 / mo</p>
+          <ul>
+            <li>✓ 5 AI Tool Access</li>
+            <li>✓ 2 Projects</li>
+            <li>✓ Community Support</li>
+          </ul>
+          <button class="plan-btn">Select</button>
+        </article>
+
+        <!-- Pro (featured) -->
+        <article class="plan-card plan-pro featured">
+          <div class="tag">Most Popular</div>
+          <h2>Pro</h2>
+          <p class="price">₹499 / mo</p>
+          <ul>
+            <li>✓ 15 AI Tools</li>
+            <li>✓ 10 Projects</li>
+            <li>✓ Email Support</li>
+          </ul>
+          <button class="plan-btn">Select</button>
+        </article>
+
+        <!-- Ultimate -->
+        <article class="plan-card plan-ultimate">
+          <h2>Ultimate</h2>
+          <p class="price">₹999 / mo</p>
+          <ul>
+            <li>✓ All Tools</li>
+            <li>✓ Unlimited Projects</li>
+            <li>✓ Premium Support</li>
+          </ul>
+          <button class="plan-btn">Select</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
