@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <title>AI Hub – Unleash the Power</title>
   <link rel="stylesheet" href="./css/main.css">
-
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <header>
       <h1 class="glow">AI Hub</h1>
       <nav>
@@ -15,13 +15,15 @@
         <a href="signup.html" class="btn-glow">Sign Up</a>
       </nav>
     </header>
-<section class="hero">
-  <h2 class="tagline">Unleash AI power like never before</h2>
-  <p class="subtext">Supercharge your creativity with AI tools</p>
-  <a href="./dashboard.html" class="btn-start">Get Started</a>
-</section>
 
+    <!-- Hero Section -->
+    <section class="hero">
+      <h2 class="tagline">Unleash AI power like never before</h2>
+      <p class="subtext">Supercharge your creativity with AI tools</p>
+      <a href="./Dashboard.html" class="btn-start">Get Started</a>
+    </section>
 
+    <!-- Tools Section -->
     <section id="tools" class="tools-grid">
       <div class="tool-box">Text to Speech</div>
       <div class="tool-box">Voice Cloning</div>
@@ -33,33 +35,45 @@
       <div class="tool-box">AI Chatbot</div>
     </section>
 
+    <!-- Footer -->
     <footer>
       <p>&copy; 2025 AI Hub. All rights reserved.</p>
     </footer>
   </div>
 
+  <!-- Plans Section at Bottom -->
   <section class="payment-section">
-  <h2 class="section-heading">Choose Your Plan</h2>
-  <div class="payment-grid">
-    <div class="plan-card">
-      <h3>Free</h3>
-      <p>Free</p>
+    <h2 class="section-heading">Choose Your Plan</h2>
+    <div class="payment-grid">
+      <div class="plan-card">
+        <h3>Free</h3>
+        <p>Free</p>
+      </div>
+      <div class="plan-card glow-plan">
+        <h3>Pro</h3>
+        <p>$50/month</p>
+      </div>
+      <div class="plan-card">
+        <h3>Enterprise</h3>
+        <p>Contact Us</p>
+      </div>
     </div>
-    <div class="plan-card glow-plan">
-      <h3>Pro</h3>
-      <p>$50/month</p>
-    </div>
-    <div class="plan-card">
-      <h3>Enterprise</h3>
-      <p>Contact Us</p>
-    </div>
-  </div>
-</section>
-<script src="./js/auth.js"></script>
-<script src="./js/login.javascript.js"></script>
-<script src="./js/chart.js"></script>
+  </section>
 
+  <!-- Scripts -->
+  <script src="./js/auth.js"></script>
+  <script src="./js/login.javascript.js"></script>
+  <script src="./js/chart.js"></script>
+  <script>
+    // Ensure Get Started button redirects correctly
+    const btn = document.querySelector('.btn-start');
+    if (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.location.href = './Dashboard.html';
+      });
+    }
+  </script>
 </body>
 </html>
-
 
