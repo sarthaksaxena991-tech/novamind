@@ -20,7 +20,7 @@
     <section class="hero">
       <h2 class="tagline">Unleash AI power like never before</h2>
       <p class="subtext">Supercharge your creativity with AI tools</p>
-      <a href="./Dashboard.html" class="btn-start">Get Started</a>
+      <a href="Dashboard.html" class="btn-start">Get Started</a>
     </section>
 
     <!-- Tools Section -->
@@ -48,14 +48,17 @@
       <div class="plan-card">
         <h3>Free</h3>
         <p>Free</p>
+        <a href="plans.html" class="plan-btn">Select</a>
       </div>
       <div class="plan-card glow-plan">
         <h3>Pro</h3>
         <p>$50/month</p>
+        <a href="plans.html" class="plan-btn">Select</a>
       </div>
       <div class="plan-card">
         <h3>Enterprise</h3>
         <p>Contact Us</p>
+        <a href="plans.html" class="plan-btn">Select</a>
       </div>
     </div>
   </section>
@@ -66,14 +69,15 @@
   <script src="./js/chart.js"></script>
   <script>
     // Ensure Get Started button redirects correctly
-    const btn = document.querySelector('.btn-start');
-    if (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        window.location.href = './Dashboard.html';
-      });
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.querySelector('.btn-start');
+      if (btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          window.location.href = 'Dashboard.html';
+        });
+      }
+    });
   </script>
 </body>
 </html>
-
