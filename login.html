@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | AI Hub</title>
   <link rel="stylesheet" href="./css/main.css" />
-  <span id="user-email"></span>
-  
 
   <!-- Supabase v2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,6 +15,12 @@
 
     <input type="email" id="email" placeholder="Enter your email" required />
     <input type="password" id="password" placeholder="Enter your password" required />
+
+    <!-- Forgot password RIGHT under password input -->
+    <p class="forgot-wrap" style="margin:10px 0 12px; text-align:right;">
+      <a id="forgot" href="#" style="color:#00f0ff; text-decoration:none; font-weight:600;">Forgot password?</a>
+    </p>
+
     <button id="login-btn" class="submit-btn">Login</button>
 
     <div class="divider" style="text-align:center;margin:12px 0;color:#bbb">or</div>
@@ -34,7 +38,7 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Email/password login (auth.js also wires this; keeping here is OK)
+    // Email/password login
     document.getElementById("login-btn").addEventListener("click", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value.trim();
@@ -46,39 +50,30 @@
       location.href = "Dashboard.html"; // case-sensitive
     });
 
-    // Google OAuth → LIVE GitHub Pages URL (no localhost)
+    // Google OAuth → LIVE GitHub Pages URL
     document.getElementById("google-login").addEventListener("click", async (e) => {
       e.preventDefault();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/Dashboard.html"
-        }
+        options: { redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/Dashboard.html" }
       });
       if (error) alert("Google login error: " + error.message);
     });
+
+    // Forgot password
+    document.getElementById('forgot').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      const email = (document.getElementById('email')||{}).value?.trim();
+      if(!email) return alert('Enter your email first');
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/login.html"
+      });
+      alert(error ? error.message : 'Reset link sent. Check your email.');
+    });
   </script>
 
-  <!-- Keep AFTER Supabase; also wires login/signup/logout & guards -->
+  <!-- Shared auth helpers (logout, guards for other pages, etc.) -->
   <script src="./js/auth.js"></script>
-  <!-- REMOVE this if it duplicates logic; only keep if you actually use it -->
-  <!-- <script src="./js/login.javascript.js"></script> -->
-  <script> if (typeof requireAuth==='function') requireAuth(); </script>
-
-  <a href="#" id="forgot">Forgot password?</a>
-<script>
-document.getElementById('forgot').addEventListener('click', async (e)=>{
-  e.preventDefault();
-  const email = (document.getElementById('email')||{}).value?.trim();
-  if(!email) return alert('Enter your email first');
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/login.html"
-  });
-  if (error) alert(error.message); else alert('Reset link sent. Check your email.');
-});
-</script>
-
+  <!-- IMPORTANT: Do NOT call requireAuth() on login page -->
 </body>
 </html>
-
-
