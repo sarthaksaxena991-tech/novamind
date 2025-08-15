@@ -8,12 +8,15 @@
 const sb = window.supabaseClient;
 
 // ---------- helpers ----------
+// ---------- helpers ----------
 const q  = s => document.querySelector(s);
 const gv = (...ids) => {
   for (const id of ids) { const el = document.getElementById(id); if (el) return el.value.trim(); }
   return "";
 };
-const redirectTo = new URL("Dashboard.html", location.href).href;
+// ✅ Fixed redirect to your GitHub Pages hosted Dashboard
+const redirectTo = "https://sarthaksaxena991-tech.github.io/novamind/Dashboard.html";
+
 
 // ---------- session helpers ----------
 async function getSession() {
@@ -105,3 +108,4 @@ async function onReady() {
   }
 }
 document.addEventListener("DOMContentLoaded", onReady);
+
