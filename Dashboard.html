@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>AI Hub — Dashboard</title>
-    <span id="user-email"></span>
 
 <!-- ===== INLINE CSS (single file) ===== -->
 <style>
@@ -31,7 +30,7 @@
 
   .wrap{max-width:1300px; margin:0 auto; padding:20px}
 
-  /* Header (encouraging) */
+  /* Header */
   .top{
     display:flex; align-items:center; justify-content:space-between; gap:14px;
     background:linear-gradient(180deg,#101735,#0e1530);
@@ -44,7 +43,8 @@
   }
   .subtitle{ color:var(--muted); margin-top:2px; font-size:13px }
   .cta{ display:flex; flex-direction:column }
-  .actions{display:flex; gap:10px}
+
+  .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
   .btn{
     padding:9px 14px; border-radius:12px; font-weight:800;
     background:#0f1a39; border:1px solid var(--stroke); color:#d9e7ff;
@@ -52,6 +52,11 @@
   }
   .btn:hover{ transform:translateY(-1px); filter:brightness(1.1) }
   .btn.primary{ background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#05121a; border-color:transparent }
+  .email-chip{
+    padding:8px 10px; border-radius:12px; font-weight:700; font-size:13px;
+    background:#0b1633; border:1px solid var(--stroke); color:#bcd5ff;
+    max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
 
   /* Metrics */
   .metrics{
@@ -94,8 +99,9 @@
   .panel-body{ padding:16px }
   canvas{ width:100%; height:320px; }
 
-  /* Footer (clean; no pink line) */
+  /* Footer */
   .footer{ text-align:center; color:#9fb0c5; margin:18px 0 4px }
+
   /* Responsive */
   @media (max-width:1024px){
     .metrics{ grid-template-columns:repeat(2,1fr) }
@@ -108,7 +114,6 @@
 </style>
 </head>
 <body>
-    <script>if (typeof requireAuth==='function') requireAuth();</script>
   <div class="wrap">
 
     <!-- Encouraging Header -->
@@ -118,8 +123,12 @@
         <div class="subtitle">Your projects, files and usage at a glance. Keep shipping!</div>
       </div>
       <div class="actions">
+        <span id="user-email" class="email-chip">—</span>
         <a class="btn" href="index.html">Home</a>
-        <a class="btn primary" href="login.html">Logout</a>
+        <a class="btn" href="settings.html">Settings</a>
+        <a class="btn" href="plans.html">Plans</a>
+        <a class="btn" href="feedback.html">Feedback</a>
+        <a class="btn primary" href="#" id="logout">Logout</a>
       </div>
     </div>
 
@@ -173,11 +182,11 @@
   <!-- ===== CHARTS (Chart.js CDN) ===== -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Try to load your own charts file (optional). If it exists, it can override the defaults below. -->
+  <!-- Optional: your own charts file -->
   <script>
     (function loadCustomCharts(){
       var s=document.createElement('script');
-      s.src='./js/charts.js';   // if you named it chart.js use './js/chart.js'
+      s.src='./js/charts.js';
       s.defer=true;
       s.onerror=function(){/* ignore if missing */};
       document.head.appendChild(s);
@@ -186,91 +195,81 @@
 
   <!-- Default charts (work out of the box) -->
   <script>
-    // Colors that fit the theme
     const c1 = 'rgba(124,194,255,0.9)';
     const c2 = 'rgba(110,242,231,0.9)';
     const b1 = 'rgba(124,194,255,0.25)';
     const b2 = 'rgba(110,242,231,0.25)';
 
-    // Users Growth (Line)
-    const ug = new Chart(document.getElementById('userGrowthChart'), {
+    new Chart(document.getElementById('userGrowthChart'), {
       type: 'line',
       data: {
         labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-        datasets: [{
-          label: 'Users',
-          data: [120,180,240,300,410,520,610,740,820,900,980,1100],
-          borderColor: c1,
-          backgroundColor: b1,
-          fill: true,
-          tension: 0.35,
-          pointRadius: 0
-        }]
+        datasets: [{ label:'Users', data:[120,180,240,300,410,520,610,740,820,900,980,1100], borderColor:c1, backgroundColor:b1, fill:true, tension:.35, pointRadius:0 }]
       },
-      options: {
-        plugins:{ legend:{ display:false } },
-        scales:{
-          x:{ grid:{ color:'rgba(255,255,255,.06)' } },
-          y:{ grid:{ color:'rgba(255,255,255,.06)' } }
-        }
-      }
+      options: { plugins:{legend:{display:false}}, scales:{ x:{ grid:{ color:'rgba(255,255,255,.06)'}}, y:{ grid:{ color:'rgba(255,255,255,.06)'}}}}
     });
 
-    // Tools Usage (Doughnut)
-    const tu = new Chart(document.getElementById('toolsUsageChart'), {
+    new Chart(document.getElementById('toolsUsageChart'), {
       type: 'doughnut',
       data: {
         labels: ['TTS','Voice Clone','Upscaler','Chatbot','Vocal Remover'],
-        datasets: [{
-          data: [26,22,18,20,14],
-          backgroundColor: [
-            'rgba(124,194,255,0.9)',
-            'rgba(110,242,231,0.9)',
-            'rgba(170,170,255,0.9)',
-            'rgba(150,220,255,0.9)',
-            'rgba(180,255,230,0.9)'
-          ],
-          borderColor: 'rgba(0,0,0,0)',
-          hoverOffset: 4
-        }]
+        datasets: [{ data:[26,22,18,20,14], backgroundColor:[
+          'rgba(124,194,255,0.9)','rgba(110,242,231,0.9)','rgba(170,170,255,0.9)','rgba(150,220,255,0.9)','rgba(180,255,230,0.9)'], borderColor:'rgba(0,0,0,0)', hoverOffset:4 }]
       },
       options:{ plugins:{ legend:{ position:'bottom', labels:{ color:'#cfe6ff' } } } }
     });
 
-    // Revenue (Bar)
-    const rev = new Chart(document.getElementById('revenueChart'), {
+    new Chart(document.getElementById('revenueChart'), {
       type: 'bar',
       data: {
         labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-        datasets: [{
-          label: 'Revenue ($k)',
-          data: [8,10,12,11,15,18,21,20,23,24,26,29],
-          backgroundColor: c2,
-          borderRadius: 8,
-        }]
+        datasets: [{ label:'Revenue ($k)', data:[8,10,12,11,15,18,21,20,23,24,26,29], backgroundColor:c2, borderRadius:8 }]
       },
-      options:{
-        plugins:{ legend:{ display:false } },
-        scales:{
-          x:{ grid:{ display:false }, ticks:{ color:'#cfe6ff' } },
-          y:{ grid:{ color:'rgba(255,255,255,.06)' }, ticks:{ color:'#cfe6ff' } }
-        }
-      }
+      options:{ plugins:{legend:{display:false}}, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#cfe6ff' } }, y:{ grid:{ color:'rgba(255,255,255,.06)' }, ticks:{ color:'#cfe6ff' } } } }
     });
   </script>
-  <!-- 1) Include on EVERY page (put before </body>) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "https://vdbjltfyoxmiijuwjlur.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
-  window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
-<script src="./js/auth.js"></script>
-<script> if (typeof requireAuth==='function') requireAuth(); </script>
+
+  <!-- Supabase (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://vdbjltfyoxmiijuwjlur.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Route guard + show user email
+    (async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        location.replace('login.html');
+        return;
+      }
+      const userEmail = session.user?.email || 'Signed in';
+      const chip = document.getElementById('user-email');
+      if (chip) chip.textContent = userEmail;
+    })();
+
+    // Keep guard active if auth state changes
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if (!session) location.replace('login.html');
+    });
+
+    // Hard logout (kills refresh token across tabs + clears local caches)
+    async function hardLogout() {
+      try { await supabaseClient.auth.signOut({ scope: 'global' }); } catch(e) {}
+      try {
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
+        });
+        sessionStorage.clear();
+      } catch(e) {}
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      location.replace('login.html');
+    }
+    document.getElementById('logout').addEventListener('click', (e) => {
+      e.preventDefault();
+      hardLogout();
+    });
+  </script>
 
 </body>
 </html>
-
-
-
-
