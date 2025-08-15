@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | AI Hub</title>
   <link rel="stylesheet" href="./css/main.css" />
+  <style>
+  /* place the link under password, aligned RIGHT */
+  .forgot-wrap{
+    display:flex; justify-content:flex-end;
+    margin:8px 4px 12px;
+  }
+  .forgot-wrap a{
+    color:#00f0ff; text-decoration:none; font-weight:600;
+  }
+
+  /* make Google button clearly visible on mobile */
+  #google-login{
+    display:block; width:100%;
+    background:#0c2a3f !important;  /* dark teal */
+    color:#ffffff !important;
+    border:1px solid rgba(0,255,255,.25);
+    box-shadow:0 6px 16px rgba(0,0,0,.35);
+    font-weight:700;
+  }
+  #google-login:hover{ filter:brightness(1.08); }
+  #google-login img{ width:18px; height:18px; margin-right:10px; vertical-align:middle; }
+</style>
 
   <!-- Supabase v2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -25,10 +47,10 @@
 
     <div class="divider" style="text-align:center;margin:12px 0;color:#bbb">or</div>
 
-    <button id="google-login" class="submit-btn" style="background:#0f1a39;margin-top:6px">
-      Continue with Google
-    </button>
-
+   <button id="google-login" class="submit-btn" 
+  style="background:#0c2a3f; color:#fff; margin-top:6px; border:1px solid rgba(0,255,255,.25); font-weight:600;">
+  Continue with Google
+   </button>
     <p style="margin-top:12px">Don't have an account? <a href="signup.html">Sign Up</a></p>
   </div>
 
@@ -77,3 +99,4 @@
   <!-- IMPORTANT: Do NOT call requireAuth() on login page -->
 </body>
 </html>
+
