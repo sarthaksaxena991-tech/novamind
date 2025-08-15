@@ -29,30 +29,50 @@
 </style>
 
   <!-- Supabase v2 CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="dark-theme">
-  <div class="auth-container feedback-box" style="max-width:420px">
-    <h2>Login</h2>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient('https://vdbjltfyoxmiijuwjlur.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E');
 
-    <input type="email" id="email" placeholder="Enter your email" required />
-    <input type="password" id="password" placeholder="Enter your password" required />
+  // If we just came from a logout, nuke anything stale and DO NOT redirect
+  (async () => {
+    const justLoggedOut = new URLSearchParams(location.search).get('logged_out') === '1';
+    if (justLoggedOut) {
+      try { await supabase.auth.signOut({ scope: 'global' }); } catch(e) {}
+      try {
+        Object.keys(localStorage).forEach(k=>{
+          if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
+        });
+        sessionStorage.clear();
+      } catch(e) {}
+      // Keep user here on login page; no bounce.
+      history.replaceState(null, '', location.pathname); // remove ?logged_out=1
+      return;
+    }
+  })();
 
-    <!-- Forgot password RIGHT under password input -->
-    <p class="forgot-wrap" style="margin:10px 0 12px; text-align:right;">
-      <a id="forgot" href="#" style="color:#00f0ff; text-decoration:none; font-weight:600;">Forgot password?</a>
-    </p>
+  // ⚠️ REMOVE any "auto redirect to dashboard if session exists" on load.
+  // Only redirect AFTER a real sign-in event.
 
-    <button id="login-btn" class="submit-btn">Login</button>
+  // Continue with Google -> go to HOME after auth (not dashboard)
+  document.getElementById('google-login')?.addEventListener('click', async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${location.origin}/index.html`,   // 👈 go to HOME after Google
+        queryParams: { prompt: 'select_account' }       // always show account picker
+      }
+    });
+    if (error) alert(error.message);
+  });
 
-    <div class="divider" style="text-align:center;margin:12px 0;color:#bbb">or</div>
-
-   <button id="google-login" class="submit-btn" 
-  style="background:#0c2a3f; color:#fff; margin-top:6px; border:1px solid rgba(0,255,255,.25); font-weight:600;">
-  Continue with Google
-   </button>
-    <p style="margin-top:12px">Don't have an account? <a href="signup.html">Sign Up</a></p>
-  </div>
+  // On successful sign-in (email/password or Google returning to site), send to HOME
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      location.replace('index.html');
+    }
+  });
+</script>
 
   <script>
     // Supabase client
@@ -99,4 +119,5 @@
   <!-- IMPORTANT: Do NOT call requireAuth() on login page -->
 </body>
 </html>
+
 
