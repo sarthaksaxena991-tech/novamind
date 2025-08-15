@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | AI Hub</title>
   <link rel="stylesheet" href="./css/main.css" />
+  <span id="user-email"></span>
+  
 
   <!-- Supabase v2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -63,6 +65,20 @@
   <!-- <script src="./js/login.javascript.js"></script> -->
   <script> if (typeof requireAuth==='function') requireAuth(); </script>
 
+  <a href="#" id="forgot">Forgot password?</a>
+<script>
+document.getElementById('forgot').addEventListener('click', async (e)=>{
+  e.preventDefault();
+  const email = (document.getElementById('email')||{}).value?.trim();
+  if(!email) return alert('Enter your email first');
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/login.html"
+  });
+  if (error) alert(error.message); else alert('Reset link sent. Check your email.');
+});
+</script>
+
 </body>
 </html>
+
 
