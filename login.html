@@ -4,51 +4,62 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | AI Hub</title>
-<link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/main.css" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <!-- Supabase v2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
-  <div class="auth-container">
+<body class="dark-theme">
+  <div class="auth-container feedback-box" style="max-width:420px">
     <h2>Login</h2>
-    
-    <input type="email" id="email" placeholder="Enter your email" />
-    <input type="password" id="password" placeholder="Enter your password" />
-    <button id="login-btn" class="primary-btn">Login</button>
 
-    <div class="divider">or</div>
+    <input type="email" id="email" placeholder="Enter your email" required />
+    <input type="password" id="password" placeholder="Enter your password" required />
+    <button id="login-btn" class="submit-btn">Login</button>
 
-    <button id="google-login" class="google-btn">
-      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google Logo" style="width: 20px; margin-right: 10px;" />
+    <div class="divider" style="text-align:center;margin:12px 0;color:#bbb">or</div>
+
+    <button id="google-login" class="submit-btn" style="background:#0f1a39;margin-top:6px">
       Continue with Google
     </button>
 
-    <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+    <p style="margin-top:12px">Don't have an account? <a href="signup.html">Sign Up</a></p>
   </div>
 
   <script>
-    // ✅ Your real Supabase project credentials
+    // Supabase client
     const SUPABASE_URL = "https://vdbjltfyoxmiijuwjlur.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
-
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    document.getElementById("google-login").addEventListener("click", async () => {
+    // Email/password login (auth.js also wires this; keeping here is OK)
+    document.getElementById("login-btn").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if (!email || !password) return alert("Please enter email and password");
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return alert("Login failed: " + error.message);
+      location.href = "Dashboard.html"; // case-sensitive
+    });
+
+    // Google OAuth → LIVE GitHub Pages URL (no localhost)
+    document.getElementById("google-login").addEventListener("click", async (e) => {
+      e.preventDefault();
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
-          redirectTo: 'http://localhost:5500/dashboard.html' // ✅ Match your Google OAuth redirect URI
+          redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/Dashboard.html"
         }
       });
-
-      if (error) {
-        console.error("Google login error:", error.message);
-      }
+      if (error) alert("Google login error: " + error.message);
     });
   </script>
-<script src="./js/auth.js"></script>
-<script src="./js/login.javascript.js"></script>
 
+  <!-- Keep AFTER Supabase; also wires login/signup/logout & guards -->
+  <script src="./js/auth.js"></script>
+  <!-- REMOVE this if it duplicates logic; only keep if you actually use it -->
+  <!-- <script src="./js/login.javascript.js"></script> -->
 </body>
 </html>
-
