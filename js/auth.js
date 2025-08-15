@@ -38,6 +38,8 @@ function wireLogin() {
     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
     if (error) return alert("Login failed: " + error.message);
     location.href = "Dashboard.html"; // case matches your file
+    <a href="#" id="logout-btn" class="btn">Logout</a>
+
   };
 
   if (form && !form._wired) { form._wired = true; form.addEventListener("submit", go); }
@@ -115,3 +117,4 @@ async function onReady() {
   // }
 }
 document.addEventListener("DOMContentLoaded", onReady);
+
