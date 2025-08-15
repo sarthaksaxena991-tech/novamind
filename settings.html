@@ -100,9 +100,12 @@
   window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 </script>
 <script src="./js/auth.js"></script>
+  <script> if (typeof requireAuth==='function') requireAuth(); </script>
+
 
 
 </body>
 </html>
+
 
 
