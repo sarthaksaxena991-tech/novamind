@@ -92,6 +92,7 @@ function wireLogout() {
     e.preventDefault();
     await sb.auth.signOut();
     location.href = "login.html";
+    <a id="logout-btn" class="btn">Logout</a>
   });
 }
 
@@ -117,4 +118,5 @@ async function onReady() {
   // }
 }
 document.addEventListener("DOMContentLoaded", onReady);
+
 
