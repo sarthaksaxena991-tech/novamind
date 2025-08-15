@@ -253,18 +253,20 @@
       if (!session) location.replace('login.html');
     });
 
-    // Hard logout (kills refresh token across tabs + clears local caches)
-    async function hardLogout() {
-      try { await supabaseClient.auth.signOut({ scope: 'global' }); } catch(e) {}
-      try {
-        Object.keys(localStorage).forEach(k => {
-          if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
-        });
-        sessionStorage.clear();
-      } catch(e) {}
-      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
-      location.replace('login.html');
-    }
+  async function hardLogout() {
+  try { await supabaseClient.auth.signOut({ scope: 'global' }); } catch(e) {}
+  try {
+    Object.keys(localStorage).forEach(k=>{
+      if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
+    });
+    sessionStorage.clear();
+  } catch(e) {}
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+
+  // 👇 send user to HOME, and also mark that we logged out
+  location.replace('index.html?logged_out=1');
+}
+
     document.getElementById('logout').addEventListener('click', (e) => {
       e.preventDefault();
       hardLogout();
@@ -273,3 +275,4 @@
 
 </body>
 </html>
+
