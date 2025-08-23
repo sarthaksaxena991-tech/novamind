@@ -2,17 +2,17 @@
 (() => {
   const URL = window.SUPABASE_URL || "https://vdbjltfyoxmiijuwjlur.supabase.co";
   const KEY = window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
-  // Use the global client created by the snippet if present; else create it here.
   window.supabaseClient = window.supabaseClient || window.supabase.createClient(URL, KEY);
 })();
 const sb = window.supabaseClient;
 
-// ================== helpers ==================
-const $ = (sel) => document.querySelector(sel);
-const val = (id) => (document.getElementById(id) || {}).value?.trim() || "";
+// ================== config ==================
+const API_BASE = window.NOVAMIND_API || "https://YOUR-RENDER-APP.onrender.com"; // <-- put your Render base URL
+const REDIRECT_DASH = "Dashboard.html"; // match your actual file name exactly
 
-// ✅ ALWAYS redirect to your live GitHub Pages Dashboard (no localhost)
-const REDIRECT_DASH = "https://sarthaksaxena991-tech.github.io/novamind/Dashboard.html";
+// ================== helpers ==================
+const $  = (sel) => document.querySelector(sel);
+const val = (id) => (document.getElementById(id) || {}).value?.trim() || "";
 
 // ================== session helpers ==================
 async function getSession() {
@@ -28,7 +28,7 @@ async function requireAuth() {
 // ================== login (email/pass) ==================
 function wireLogin() {
   const form = $("#login-form");
-  const btn  = $("#login-btn") || $("#login-button"); // supports either id
+  const btn  = $("#login-btn") || $("#login-button");
 
   const go = async (e) => {
     e && e.preventDefault();
@@ -37,9 +37,7 @@ function wireLogin() {
     if (!email || !pass) return alert("Please enter email and password");
     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
     if (error) return alert("Login failed: " + error.message);
-    location.href = "Dashboard.html"; // case matches your file
-    <a href="#" id="logout-btn" class="btn">Logout</a>
-
+    location.href = REDIRECT_DASH;
   };
 
   if (form && !form._wired) { form._wired = true; form.addEventListener("submit", go); }
@@ -76,7 +74,7 @@ function wireGoogle() {
     e.preventDefault();
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: REDIRECT_DASH }   // <- LIVE URL
+      options: { redirectTo: location.origin + "/" + REDIRECT_DASH }
     });
     if (error) alert("Google login error: " + error.message);
   });
@@ -84,7 +82,7 @@ function wireGoogle() {
 
 // ================== logout ==================
 function wireLogout() {
-  const btn = $("#logout-btn");
+  const btn = $("#logout-btn") || $("#logoutBtn");
   if (!btn || btn._wired) return;
   btn._wired = true;
 
@@ -92,31 +90,83 @@ function wireLogout() {
     e.preventDefault();
     await sb.auth.signOut();
     location.href = "login.html";
-    <a id="logout-btn" class="btn">Logout</a>
   });
 }
 
-// ================== page guards + UI fill ==================
+// ================== Upscaler wiring (Render backend) ==================
+function wireUpscaler(){
+  const f = $("#up-file");
+  const b = $("#up-enhance");
+  const s = $("#up-status");
+  const img = $("#up-result");
+  const dl = $("#up-download");
+
+  if (!f || !b) return;
+
+  b.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!f.files[0]) { alert("Choose a file"); return; }
+    s && (s.textContent = "Uploading...");
+
+    const fd = new FormData();
+    fd.append("file", f.files[0]);
+
+    // Try /api/upscale then fallback to /enhance
+    let res;
+    try { res = await fetch(`${API_BASE}/api/upscale`, { method:"POST", body: fd }); } catch {}
+    if (!res || !res.ok) {
+      try { res = await fetch(`${API_BASE}/enhance`, { method:"POST", body: fd }); } catch {}
+      if (!res || !res.ok) { s && (s.textContent = "Failed to start"); return; }
+    }
+    const data = await res.json();
+
+    // Async job with polling
+    if (data.job_id){
+      s && (s.textContent = "Processing...");
+      let tries = 0;
+      while (tries < 120){
+        await new Promise(r => setTimeout(r, 1000));
+        let st;
+        try { st = await fetch(`${API_BASE}/api/status?job_id=${encodeURIComponent(data.job_id)}`).then(x=>x.json()); } catch {}
+        if (!st) { tries++; continue; }
+        if (st.status === "done"){
+          if (img) img.src = st.output_url;
+          if (dl){ dl.href = st.output_url; dl.download = "result"; dl.style.display = "inline-block"; }
+          s && (s.textContent = "Done");
+          return;
+        }
+        if (st.status === "error"){ s && (s.textContent = st.message || "Error"); return; }
+        s && (s.textContent = `Processing... ${st.progress || ""}`);
+        tries++;
+      }
+      s && (s.textContent = "Timed out");
+      return;
+    }
+
+    // Synchronous response
+    if (data.output_url){
+      if (img) img.src = data.output_url;
+      if (dl){ dl.href = data.output_url; dl.download = "result"; dl.style.display = "inline-block"; }
+      s && (s.textContent = "Done");
+      return;
+    }
+
+    s && (s.textContent = "Unexpected response");
+  });
+}
+
+// ================== page guards + init ==================
 async function onReady() {
   wireLogin();
   wireSignup();
   wireGoogle();
   wireLogout();
+  wireUpscaler();
 
   const path = location.pathname.toLowerCase();
-
-  // Protect private pages
   if (path.endsWith("/dashboard.html") || path.endsWith("/settings.html")) {
     const user = await requireAuth();
     if (user && $("#user-email")) $("#user-email").textContent = user.email;
   }
-
-  // Optional: from index, auto-forward if already logged-in (leave commented if not desired)
-  // if (path.endsWith("/index.html") || /\/novamind\/?$/.test(location.pathname)) {
-  //   const s = await getSession();
-  //   if (s) location.href = "Dashboard.html";
-  // }
 }
 document.addEventListener("DOMContentLoaded", onReady);
-
-
