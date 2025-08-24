@@ -3,116 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaMind - Sign Up</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <title>NovaMind - Create Account</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #6e8efb;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-weight: 600;
+            font-size: 28px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: #6e8efb;
+            outline: none;
+        }
+        
+        .input-group .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        
+        .checkbox-group input {
+            margin-top: 3px;
+            margin-right: 10px;
+        }
+        
+        .checkbox-group label {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .checkbox-group a {
+            color: #6e8efb;
+            text-decoration: none;
+        }
+        
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+        
+        .submit-btn {
+            background: #6e8efb;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background: #5a7dfa;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #555;
+            font-size: 15px;
+        }
+        
+        .login-link a {
+            color: #6e8efb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="logo">
-            <i class="fas fa-brain"></i>
-            <span>NovaMind</span>
+    <div class="container">
+        <div class="header">
+            <h1>NovaMind</h1>
+            <p>Create an Account</p>
         </div>
         
-        <div class="auth-form">
-            <h2>Create an Account</h2>
+        <div class="form-container">
+            <div id="successMessage" class="message success">
+                Account created successfully! Redirecting...
+            </div>
             
-            <div id="alertBox" class="alert">
-                <span id="alertMessage"></span>
+            <div id="errorMessage" class="message error-message">
+                Error message will appear here
             </div>
             
             <form id="signupForm">
-                <div class="form-group">
-                    <label for="signup-name">Full Name</label>
-                    <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required>
+                    <div class="error" id="nameError">Please enter your full name</div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <div class="error" id="emailError">Please enter a valid email address</div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" id="signup-password" placeholder="Create a password" required minlength="6">
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password" required>
+                    <div class="error" id="passwordError">Password must be at least 6 characters</div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="signup-confirm">Confirm Password</label>
-                    <input type="password" id="signup-confirm" placeholder="Confirm your password" required>
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                    <div class="error" id="confirmError">Passwords do not match</div>
                 </div>
                 
-                <div class="form-options">
-                    <label>
-                        <input type="checkbox" id="terms" required> I agree to the Terms & Conditions
-                    </label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms & Conditions</a></label>
                 </div>
                 
-                <button type="submit" class="submit-btn" id="signup-submit">Create Account</button>
+                <button type="submit" class="submit-btn">Create Account</button>
             </form>
             
-            <div class="auth-switch">
-                Already have an account? <a href="login.html">Login</a>
+            <div class="login-link">
+                Already have an account? <a href="#">Login</a>
             </div>
         </div>
     </div>
 
-    <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/auth.js"></script>
-    
     <script>
+        // Initialize Supabase (replace with your actual Supabase URL and API Key)
+        const supabaseUrl =' https://vdbjltfyoxmiijuwjlur.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Form validation and submission
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const submitBtn = document.getElementById('signup-submit');
-            const alertBox = document.getElementById('alertBox');
-            const alertMessage = document.getElementById('alertMessage');
+            // Reset error messages
+            hideAllErrors();
             
             // Get form values
-            const fullName = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementById('signup-confirm').value;
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const termsAccepted = document.getElementById('terms').checked;
             
-            // Validate passwords match
-            if (password !== confirmPassword) {
-                showAlert('Passwords do not match', 'error');
-                return;
+            // Validate form
+            let isValid = true;
+            
+            if (!fullName) {
+                showError('nameError', 'Please enter your full name');
+                isValid = false;
             }
             
-            // Change button text
-            submitBtn.textContent = 'Creating Account...';
-            submitBtn.disabled = true;
+            if (!isValidEmail(email)) {
+                showError('emailError', 'Please enter a valid email address');
+                isValid = false;
+            }
             
-            // Sign up with Supabase
-            const result = await signUp(email, password, fullName);
+            if (password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
             
-            if (result.success) {
-                showAlert('Account created successfully! Please check your email for verification.', 'success');
+            if (password !== confirmPassword) {
+                showError('confirmError', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (!termsAccepted) {
+                alert('You must agree to the Terms & Conditions');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            try {
+                // Sign up with Supabase
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName
+                        }
+                    }
+                });
                 
-                // Redirect to login page after 3 seconds
+                if (error) {
+                    showErrorMessage('Error creating account: ' + error.message);
+                    return;
+                }
+                
+                // Show success message
+                showSuccessMessage('Account created successfully! Please check your email to confirm your account.');
+                
+                // Reset form
+                document.getElementById('signupForm').reset();
+                
+                // Simulate redirect after successful signup
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '/dashboard.html'; // Change to your actual redirect URL
                 }, 3000);
-            } else {
-                showAlert(result.error, 'error');
-                submitBtn.textContent = 'Create Account';
-                submitBtn.disabled = false;
+                
+            } catch (error) {
+                showErrorMessage('An unexpected error occurred: ' + error.message);
             }
         });
         
-        function showAlert(message, type) {
-            const alertBox = document.getElementById('alertBox');
-            const alertMessage = document.getElementById('alertMessage');
+        // Helper functions
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function hideAllErrors() {
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => {
+                error.style.display = 'none';
+            });
+            hideErrorMessage();
+        }
+        
+        function showErrorMessage(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
             
-            alertMessage.textContent = message;
-            alertBox.className = `alert alert-${type}`;
-            alertBox.style.display = 'block';
-            
-            // Scroll to alert
-            alertBox.scrollIntoView({ behavior: 'smooth' });
+            // Hide after 5 seconds
+            setTimeout(hideErrorMessage, 5000);
+        }
+        
+        function hideErrorMessage() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+        
+        function showSuccessMessage(message) {
+            const successElement = document.getElementById('successMessage');
+            successElement.textContent = message;
+            successElement.style.display = 'block';
         }
     </script>
 </body>
