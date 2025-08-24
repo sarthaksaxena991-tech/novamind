@@ -1,123 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | AI Hub</title>
-  <link rel="stylesheet" href="./css/main.css" />
-  <style>
-  /* place the link under password, aligned RIGHT */
-  .forgot-wrap{
-    display:flex; justify-content:flex-end;
-    margin:8px 4px 12px;
-  }
-  .forgot-wrap a{
-    color:#00f0ff; text-decoration:none; font-weight:600;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaMind - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            <span>NovaMind</span>
+        </div>
+        
+        <div class="auth-form">
+            <h2>Login to NovaMind</h2>
+            
+            <div id="alertBox" class="alert">
+                <span id="alertMessage"></span>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" id="remember"> Remember me
+                    </label>
+                    <a href="#">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="login-submit">Login</button>
+            </form>
+            
+            <div class="auth-switch">
+                Don't have an account? <a href="signup.html">Sign up</a>
+            </div>
+        </div>
+    </div>
 
-  /* make Google button clearly visible on mobile */
-  #google-login{
-    display:block; width:100%;
-    background:#0c2a3f !important;  /* dark teal */
-    color:#ffffff !important;
-    border:1px solid rgba(0,255,255,.25);
-    box-shadow:0 6px 16px rgba(0,0,0,.35);
-    font-weight:700;
-  }
-  #google-login:hover{ filter:brightness(1.08); }
-  #google-login img{ width:18px; height:18px; margin-right:10px; vertical-align:middle; }
-</style>
-
-  <!-- Supabase v2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabase = window.supabase.createClient('https://vdbjltfyoxmiijuwjlur.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E');
-
-  // If we just came from a logout, nuke anything stale and DO NOT redirect
-  (async () => {
-    const justLoggedOut = new URLSearchParams(location.search).get('logged_out') === '1';
-    if (justLoggedOut) {
-      try { await supabase.auth.signOut({ scope: 'global' }); } catch(e) {}
-      try {
-        Object.keys(localStorage).forEach(k=>{
-          if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('login-submit');
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            // Get form values
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Change button text
+            submitBtn.textContent = 'Logging in...';
+            submitBtn.disabled = true;
+            
+            // Sign in with Supabase
+            const result = await signIn(email, password);
+            
+            if (result.success) {
+                showAlert('Login successful! Redirecting to dashboard...', 'success');
+                
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+            } else {
+                showAlert(result.error, 'error');
+                submitBtn.textContent = 'Login';
+                submitBtn.disabled = false;
+            }
         });
-        sessionStorage.clear();
-      } catch(e) {}
-      // Keep user here on login page; no bounce.
-      history.replaceState(null, '', location.pathname); // remove ?logged_out=1
-      return;
-    }
-  })();
-
-  // ⚠️ REMOVE any "auto redirect to dashboard if session exists" on load.
-  // Only redirect AFTER a real sign-in event.
-
-  // Continue with Google -> go to HOME after auth (not dashboard)
-  document.getElementById('google-login')?.addEventListener('click', async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${location.origin}/index.html`,   // 👈 go to HOME after Google
-        queryParams: { prompt: 'select_account' }       // always show account picker
-      }
-    });
-    if (error) alert(error.message);
-  });
-
-  // On successful sign-in (email/password or Google returning to site), send to HOME
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      location.replace('index.html');
-    }
-  });
-</script>
-
-  <script>
-    // Supabase client
-    const SUPABASE_URL = "https://vdbjltfyoxmiijuwjlur.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Email/password login
-    document.getElementById("login-btn").addEventListener("click", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      if (!email || !password) return alert("Please enter email and password");
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return alert("Login failed: " + error.message);
-      location.href = "Dashboard.html"; // case-sensitive
-    });
-
-    // Google OAuth → LIVE GitHub Pages URL
-    document.getElementById("google-login").addEventListener("click", async (e) => {
-      e.preventDefault();
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/Dashboard.html" }
-      });
-      if (error) alert("Google login error: " + error.message);
-    });
-
-    // Forgot password
-    document.getElementById('forgot').addEventListener('click', async (e)=>{
-      e.preventDefault();
-      const email = (document.getElementById('email')||{}).value?.trim();
-      if(!email) return alert('Enter your email first');
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://sarthaksaxena991-tech.github.io/novamind/login.html"
-      });
-      alert(error ? error.message : 'Reset link sent. Check your email.');
-    });
-  </script>
-
-  <!-- Shared auth helpers (logout, guards for other pages, etc.) -->
-  <script src="./js/auth.js"></script>
-  <!-- IMPORTANT: Do NOT call requireAuth() on login page -->
+        
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertMessage.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+            
+            // Scroll to alert
+            alertBox.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Check if user is already logged in
+        async function checkAuthStatus() {
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user) {
+                // User is already logged in, redirect to dashboard
+                window.location.href = 'dashboard.html';
+            }
+        }
+        
+        // Check auth status on page load
+        checkAuthStatus();
+    </script>
 </body>
 </html>
-
-
