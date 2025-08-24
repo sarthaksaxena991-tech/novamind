@@ -1,278 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AI Hub — Dashboard</title>
-
-<!-- ===== INLINE CSS (single file) ===== -->
-<style>
-  :root{
-    --bg:#0f1220; --bg2:#0c1020;
-    --panel:#121935; --panel2:#0f1730;
-    --stroke:rgba(255,255,255,.08);
-    --txt:#eaf2ff; --muted:#b9c4d6;
-    --brand:#7cc2ff; --brand2:#6ef2e7;
-    --good:#8ee3a6; --warn:#ffc98b; --bad:#ff9aa2;
-    --radius:18px; --shadow:0 14px 30px rgba(0,0,0,.35);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    min-height:100dvh; color:var(--txt);
-    font:500 15px/1.55 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
-    background:
-      radial-gradient(110% 110% at 0% 0%, rgba(110,242,231,.06), transparent 55%),
-      radial-gradient(110% 110% at 100% 100%, rgba(124,194,255,.06), transparent 55%),
-      linear-gradient(180deg, var(--bg2), var(--bg));
-  }
-  a{color:inherit;text-decoration:none}
-
-  .wrap{max-width:1300px; margin:0 auto; padding:20px}
-
-  /* Header */
-  .top{
-    display:flex; align-items:center; justify-content:space-between; gap:14px;
-    background:linear-gradient(180deg,#101735,#0e1530);
-    border:1px solid var(--stroke); border-radius:var(--radius);
-    padding:16px 18px; box-shadow:var(--shadow);
-  }
-  .title{
-    font-weight:900; font-size:clamp(22px,3.6vw,30px); letter-spacing:.4px;
-    text-shadow:0 0 16px rgba(124,194,255,.45);
-  }
-  .subtitle{ color:var(--muted); margin-top:2px; font-size:13px }
-  .cta{ display:flex; flex-direction:column }
-
-  .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  .btn{
-    padding:9px 14px; border-radius:12px; font-weight:800;
-    background:#0f1a39; border:1px solid var(--stroke); color:#d9e7ff;
-    transition:.18s transform,.18s filter; box-shadow:var(--shadow);
-  }
-  .btn:hover{ transform:translateY(-1px); filter:brightness(1.1) }
-  .btn.primary{ background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#05121a; border-color:transparent }
-  .email-chip{
-    padding:8px 10px; border-radius:12px; font-weight:700; font-size:13px;
-    background:#0b1633; border:1px solid var(--stroke); color:#bcd5ff;
-    max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  }
-
-  /* Metrics */
-  .metrics{
-    display:grid; grid-template-columns:repeat(4, minmax(180px,1fr));
-    gap:16px; margin:18px 0;
-  }
-  .metric{
-    background:linear-gradient(180deg,#0f1634 0%, #0d152f 100%);
-    border:1px solid var(--stroke); border-radius:16px; padding:16px;
-    box-shadow:var(--shadow); position:relative; overflow:hidden;
-  }
-  .metric:before{
-    content:""; position:absolute; inset:0; pointer-events:none;
-    background: radial-gradient(80% 60% at 10% 0%, rgba(124,194,255,.13), transparent 60%);
-  }
-  .metric-head{ color:var(--muted); font-size:12px; font-weight:800 }
-  .metric-value{ margin-top:6px; font-size:28px; font-weight:900; letter-spacing:.5px }
-
-  /* Grid: quick tiles */
-  .tiles{ display:grid; grid-template-columns:repeat(4, minmax(180px,1fr)); gap:16px; }
-  .tile{
-    background:linear-gradient(180deg,#0f152b,#0f1833);
-    border:1px solid var(--stroke); border-radius:16px; padding:18px;
-    box-shadow:var(--shadow); text-align:center; font-weight:800;
-    transition:.18s transform,.18s box-shadow;
-  }
-  .tile:hover{ transform:translateY(-4px); box-shadow:0 18px 30px rgba(0,0,0,.45) }
-
-  /* Panels for charts */
-  .panels{ display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; margin-top:16px }
-  .panel{
-    background:linear-gradient(180deg,#0f1634, #0e1530);
-    border:1px solid var(--stroke); border-radius:16px; box-shadow:var(--shadow);
-  }
-  .panel-head{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:14px 16px; border-bottom:1px solid var(--stroke);
-  }
-  .panel-title{ font-weight:900 }
-  .panel-body{ padding:16px }
-  canvas{ width:100%; height:320px; }
-
-  /* Footer */
-  .footer{ text-align:center; color:#9fb0c5; margin:18px 0 4px }
-
-  /* Responsive */
-  @media (max-width:1024px){
-    .metrics{ grid-template-columns:repeat(2,1fr) }
-    .tiles{ grid-template-columns:repeat(2,1fr) }
-    .panels{ grid-template-columns:1fr }
-  }
-  @media (max-width:560px){
-    .metrics,.tiles{ grid-template-columns:1fr }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaMind - Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .dashboard {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-message h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .tool-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tool-section h2 {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .tool-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-group {
+            margin-bottom: 1rem;
+        }
+        
+        .option-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .option-group select, .option-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 1rem;
+        }
+        
+        .process-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .process-btn:hover {
+            background: var(--secondary);
+        }
+        
+        .results-area {
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .image-container {
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            margin-top: 1.5rem;
+            padding: 12px 25px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-brain"></i> NovaMind
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link active">Dashboard</a>
+                <a href="plans.html" class="nav-link">Plans</a>
+                <a href="settings.html" class="nav-link">Settings</a>
+                <a href="login.html" class="nav-link">Logout</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Encouraging Header -->
-    <div class="top">
-      <div class="cta">
-        <div class="title">Welcome back — let’s build something amazing today 🚀</div>
-        <div class="subtitle">Your projects, files and usage at a glance. Keep shipping!</div>
-      </div>
-      <div class="actions">
-        <span id="user-email" class="email-chip">—</span>
-        <a class="btn" href="index.html">Home</a>
-        <a class="btn" href="settings.html">Settings</a>
-        <a class="btn" href="plans.html">Plans</a>
-        <a class="btn" href="feedback.html">Feedback</a>
-        <a class="btn primary" href="#" id="logout">Logout</a>
-      </div>
+    <!-- Dashboard Content -->
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="welcome-message">
+                <h1>Welcome back, User!</h1>
+                <p>Which tool would you like to use today?</p>
+            </div>
+            <a href="plans.html" class="btn btn-primary">Upgrade Plan</a>
+        </div>
+        
+        <div class="dashboard-tools">
+            <!-- Image Upscaler Tool -->
+            <div class="tool-section">
+                <h2><i class="fas fa-expand"></i> Image Upscaler</h2>
+                <div class="upload-area">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drag & Drop your image here</h3>
+                    <p>or click to browse files</p>
+                    <input type="file" style="display: none;">
+                </div>
+                
+                <div class="tool-options">
+                    <div class="option-group">
+                        <label for="scale-factor">Scale Factor</label>
+                        <select id="scale-factor">
+                            <option value="2">2x</option>
+                            <option value="4" selected>4x</option>
+                            <option value="8">8x</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label for="output-format">Output Format</label>
+                        <select id="output-format">
+                            <option value="jpg">JPG</option>
+                            <option value="png" selected>PNG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="process-btn">Upscale Image</button>
+                
+                <div class="results-area">
+                    <h3>Results</h3>
+                    <div class="comparison">
+                        <div class="image-container">
+                            <p>Original Image</p>
+                        </div>
+                        <div class="image-container">
+                            <p>Upscaled Image</p>
+                        </div>
+                    </div>
+                    <button class="download-btn">Download Upscaled Image</button>
+                </div>
+            </div>
+            
+            <!-- Other Tools Section -->
+            <div class="tool-section">
+                <h2><i class="fas fa-microphone-alt"></i> Vocal Remover</h2>
+                <p>Remove vocals from any song and create instant instrumentals.</p>
+                <button class="process-btn">Use Vocal Remover</button>
+            </div>
+            
+            <div class="tool-section">
+                <h2><i class="fas fa-text-height"></i> Text to Speech</h2>
+                <p>Convert written text into natural-sounding speech.</p>
+                <button class="process-btn">Use Text to Speech</button>
+            </div>
+            
+            <div class="tool-section">
+                <h2><i class="fas fa-cut"></i> Background Remover</h2>
+                <p>Instantly remove backgrounds from your images.</p>
+                <button class="process-btn">Use Background Remover</button>
+            </div>
+        </div>
     </div>
 
-    <!-- KPI Metrics -->
-    <section class="metrics">
-      <div class="metric">
-        <div class="metric-head">Projects</div>
-        <div class="metric-value" id="mProjects">12</div>
-      </div>
-      <div class="metric">
-        <div class="metric-head">Files</div>
-        <div class="metric-value" id="mFiles">48</div>
-      </div>
-      <div class="metric">
-        <div class="metric-head">API Calls</div>
-        <div class="metric-value" id="mApi">1.2k</div>
-      </div>
-      <div class="metric">
-        <div class="metric-head">Uptime</div>
-        <div class="metric-value" id="mUptime">99.9%</div>
-      </div>
-    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector(".hamburger");
+        const navMenu = document.querySelector(".nav-menu");
 
-    <!-- Quick tiles -->
-    <section class="tiles">
-      <a class="tile" href="#">My Projects</a>
-      <a class="tile" href="#">Recent Files</a>
-      <a class="tile" href="#">Usage Stats</a>
-      <a class="tile" href="#">Account</a>
-    </section>
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navMenu.classList.toggle("active");
+        });
 
-    <!-- Charts -->
-    <section class="panels">
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Users Growth</div></div>
-        <div class="panel-body"><canvas id="userGrowthChart"></canvas></div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Tools Usage</div></div>
-        <div class="panel-body"><canvas id="toolsUsageChart"></canvas></div>
-      </div>
-      <div class="panel" style="grid-column:1 / -1">
-        <div class="panel-head"><div class="panel-title">Revenue</div></div>
-        <div class="panel-body"><canvas id="revenueChart"></canvas></div>
-      </div>
-    </section>
-
-    <div class="footer">© 2025 AI Hub. All rights reserved.</div>
-  </div>
-
-  <!-- ===== CHARTS (Chart.js CDN) ===== -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Optional: your own charts file -->
-  <script>
-    (function loadCustomCharts(){
-      var s=document.createElement('script');
-      s.src='./js/charts.js';
-      s.defer=true;
-      s.onerror=function(){/* ignore if missing */};
-      document.head.appendChild(s);
-    })();
-  </script>
-
-  <!-- Default charts (work out of the box) -->
-  <script>
-    const c1 = 'rgba(124,194,255,0.9)';
-    const c2 = 'rgba(110,242,231,0.9)';
-    const b1 = 'rgba(124,194,255,0.25)';
-    const b2 = 'rgba(110,242,231,0.25)';
-
-    new Chart(document.getElementById('userGrowthChart'), {
-      type: 'line',
-      data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-        datasets: [{ label:'Users', data:[120,180,240,300,410,520,610,740,820,900,980,1100], borderColor:c1, backgroundColor:b1, fill:true, tension:.35, pointRadius:0 }]
-      },
-      options: { plugins:{legend:{display:false}}, scales:{ x:{ grid:{ color:'rgba(255,255,255,.06)'}}, y:{ grid:{ color:'rgba(255,255,255,.06)'}}}}
-    });
-
-    new Chart(document.getElementById('toolsUsageChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ['TTS','Voice Clone','Upscaler','Chatbot','Vocal Remover'],
-        datasets: [{ data:[26,22,18,20,14], backgroundColor:[
-          'rgba(124,194,255,0.9)','rgba(110,242,231,0.9)','rgba(170,170,255,0.9)','rgba(150,220,255,0.9)','rgba(180,255,230,0.9)'], borderColor:'rgba(0,0,0,0)', hoverOffset:4 }]
-      },
-      options:{ plugins:{ legend:{ position:'bottom', labels:{ color:'#cfe6ff' } } } }
-    });
-
-    new Chart(document.getElementById('revenueChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-        datasets: [{ label:'Revenue ($k)', data:[8,10,12,11,15,18,21,20,23,24,26,29], backgroundColor:c2, borderRadius:8 }]
-      },
-      options:{ plugins:{legend:{display:false}}, scales:{ x:{ grid:{ display:false }, ticks:{ color:'#cfe6ff' } }, y:{ grid:{ color:'rgba(255,255,255,.06)' }, ticks:{ color:'#cfe6ff' } } } }
-    });
-  </script>
-
-  <!-- Supabase (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://vdbjltfyoxmiijuwjlur.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Route guard + show user email
-    (async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        location.replace('login.html');
-        return;
-      }
-      const userEmail = session.user?.email || 'Signed in';
-      const chip = document.getElementById('user-email');
-      if (chip) chip.textContent = userEmail;
-    })();
-
-    // Keep guard active if auth state changes
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
-      if (!session) location.replace('login.html');
-    });
-
-  async function hardLogout() {
-  try { await supabaseClient.auth.signOut({ scope: 'global' }); } catch(e) {}
-  try {
-    Object.keys(localStorage).forEach(k=>{
-      if (k.startsWith('sb-') || k.includes('supabase')) localStorage.removeItem(k);
-    });
-    sessionStorage.clear();
-  } catch(e) {}
-  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
-
-  // 👇 send user to HOME, and also mark that we logged out
-  location.replace('index.html?logged_out=1');
-}
-
-    document.getElementById('logout').addEventListener('click', (e) => {
-      e.preventDefault();
-      hardLogout();
-    });
-  </script>
-
+        document.querySelectorAll(".nav-link").forEach(n => n.addEventListener("click", () => {
+            hamburger.classList.remove("active");
+            navMenu.classList.remove("active");
+        }));
+        
+        // Simulate image upscaling process
+        document.querySelector('.process-btn').addEventListener('click', function() {
+            if (this.textContent === 'Upscale Image') {
+                this.textContent = 'Processing...';
+                setTimeout(() => {
+                    this.textContent = 'Upscale Image';
+                    document.querySelector('.results-area').style.display = 'block';
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
-
