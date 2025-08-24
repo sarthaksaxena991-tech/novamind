@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaMind - AI-Powered Creative Suite</title>
+    <title>NovaMind - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Global Styles */
@@ -16,6 +16,7 @@
             --light: #f8f9fa;
             --gray: #e2e2e2;
             --success: #4cc9a4;
+            --sidebar-width: 250px;
         }
         
         * {
@@ -86,24 +87,93 @@
             color: var(--primary);
         }
         
-        .auth-buttons {
+        .user-info {
             display: flex;
+            align-items: center;
             gap: 15px;
         }
         
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-item {
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--gray);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+        
+        .sidebar-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .dashboard-content {
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .welcome-message h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message p {
+            color: var(--gray);
+        }
+        
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             border: none;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
         }
         
         .btn-primary {
@@ -116,47 +186,55 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
-        /* Hero Section */
-        .hero {
-            padding: 80px 0;
-            text-align: center;
+        /* Dashboard Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
         
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto 40px;
-            color: var(--gray);
-        }
-        
-        .hero-buttons {
+        .stat-header {
             display: flex;
-            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
         }
         
-        /* Tools Section */
-        .tools-section {
-            padding: 60px 0;
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
         
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            font-size: 2.2rem;
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
         }
         
+        /* Tools Grid */
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
         }
         
@@ -168,6 +246,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
         }
         
         .tool-card:hover {
@@ -215,269 +294,15 @@
             color: var(--accent);
         }
         
-        /* Dashboard Preview */
-        .dashboard-preview {
-            padding: 80px 0;
-            text-align: center;
-        }
-        
-        .dashboard-image {
-            max-width: 100%;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            margin-top: 40px;
-        }
-        
-        /* Auth Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: var(--darker);
-            border-radius: 15px;
-            width: 100%;
-            max-width: 450px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray);
-        }
-        
-        .auth-form h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--light);
-            font-size: 1rem;
-        }
-        
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .form-options a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .submit-btn:hover {
-            background: var(--secondary);
-        }
-        
-        .auth-switch {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .auth-switch a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        /* Footer */
-        footer {
-            background: var(--dark);
-            padding: 60px 0 30px;
-            margin-top: 80px;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .footer-column h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: var(--light);
-        }
-        
-        .footer-column ul {
-            list-style: none;
-        }
-        
-        .footer-column ul li {
-            margin-bottom: 10px;
-        }
-        
-        .footer-column a {
-            color: var(--gray);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-column a:hover {
-            color: var(--primary);
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--light);
-            transition: all 0.3s;
-        }
-        
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-3px);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            nav ul {
-                gap: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .form-options {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-        
-        /* Dashboard Styles */
-        #dashboard {
-            display: none;
-        }
-        
-        .dashboard-container {
-            padding: 30px 0;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        
-        .welcome-message h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .dashboard-tools {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
-        }
-        
-        /* Image Upscaler Tool */
+        /* Tool Interface */
         .tool-interface {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             padding: 25px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 30px;
+            display: none;
         }
         
         .tool-header {
@@ -601,318 +426,219 @@
         .download-btn:hover {
             background: #3db893;
         }
+        
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 15px;
+            }
+            
+            .sidebar-item {
+                padding: 15px 20px;
+                white-space: nowrap;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tool-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Landing Page -->
-    <div id="landing-page">
-        <header>
-            <div class="container">
-                <div class="header-content">
-                    <a href="#" class="logo">
-                        <i class="fas fa-brain"></i>
-                        <span>NovaMind</span>
-                    </a>
-                    
-                    <nav>
-                        <ul>
-                            <li><a href="#" class="active">Home</a></li>
-                            <li><a href="#">Tools</a></li>
-                            <li><a href="#">Pricing</a></li>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Contact</a></li>
-                        </ul>
-                    </nav>
-                    
-                    <div class="auth-buttons">
-                        <button class="btn btn-outline" id="login-btn">Login</button>
-                        <button class="btn btn-primary" id="signup-btn">Sign Up</button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <section class="hero">
-            <div class="container">
-                <h1>AI-Powered Creativity Suite</h1>
-                <p>Enhance your content with our cutting-edge AI tools for image upscaling, voice manipulation, video enhancement, and more.</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary">Explore Tools</button>
-                    <button class="btn btn-outline">Watch Demo</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="tools-section">
-            <div class="container">
-                <h2 class="section-title">Our AI Tools</h2>
-                <div class="tools-grid">
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-expand"></i>
-                        </div>
-                        <h3>Image Upscaler</h3>
-                        <p>Increase image resolution without losing quality using advanced AI algorithms.</p>
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-microphone-alt"></i>
-                        </div>
-                        <h3>Vocal Remover</h3>
-                        <p>Remove vocals from any song and create instant instrumentals.</p>
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-text-height"></i>
-                        </div>
-                        <h3>Text to Speech</h3>
-                        <p>Convert written text into natural-sounding speech in multiple languages.</p>
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-clone"></i>
-                        </div>
-                        <h3>Voice Cloner</h3>
-                        <p>Replicate any voice with just a short sample of the target voice.</p>
-                        <span class="status-badge status-soon">Coming Soon</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-cut"></i>
-                        </div>
-                        <h3>Background Remover</h3>
-                        <p>Instantly remove backgrounds from your images with precision.</p>
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-film"></i>
-                        </div>
-                        <h3>Text to Video</h3>
-                        <p>Generate engaging videos from text descriptions using AI.</p>
-                        <span class="status-badge status-soon">Coming Soon</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-image"></i>
-                        </div>
-                        <h3>Image Generator</h3>
-                        <p>Create stunning images from text descriptions with AI.</p>
-                        <span class="status-badge status-available">Available</span>
-                    </div>
-                    
-                    <div class="tool-card">
-                        <div class="tool-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h3>Video Enhancer</h3>
-                        <p>Enhance video quality, resolution, and stability with AI technology.</p>
-                        <span class="status-badge status-soon">Coming Soon</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="dashboard-preview">
-            <div class="container">
-                <h2 class="section-title">Powerful Dashboard</h2>
-                <p>Access all tools from one convenient location with our user-friendly dashboard</p>
-                <img src="https://via.placeholder.com/1000x600/1a1a2e/ffffff?text=NovaMind+Dashboard" alt="Dashboard Preview" class="dashboard-image">
-            </div>
-        </section>
-
-        <!-- Login Modal -->
-        <div class="modal" id="login-modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <div class="auth-form">
-                    <h2>Login to NovaMind</h2>
-                    <div class="form-group">
-                        <label for="login-email">Email</label>
-                        <input type="email" id="login-email" placeholder="Enter your email">
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" placeholder="Enter your password">
-                    </div>
-                    <div class="form-options">
-                        <label>
-                            <input type="checkbox"> Remember me
-                        </label>
-                        <a href="#">Forgot password?</a>
-                    </div>
-                    <button class="submit-btn" id="login-submit">Login</button>
-                    <div class="auth-switch">
-                        Don't have an account? <a href="#" id="switch-to-signup">Sign up</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Signup Modal -->
-        <div class="modal" id="signup-modal">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <div class="auth-form">
-                    <h2>Create an Account</h2>
-                    <div class="form-group">
-                        <label for="signup-name">Full Name</label>
-                        <input type="text" id="signup-name" placeholder="Enter your full name">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-email">Email</label>
-                        <input type="email" id="signup-email" placeholder="Enter your email">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-password">Password</label>
-                        <input type="password" id="signup-password" placeholder="Create a password">
-                    </div>
-                    <div class="form-group">
-                        <label for="signup-confirm">Confirm Password</label>
-                        <input type="password" id="signup-confirm" placeholder="Confirm your password">
-                    </div>
-                    <div class="form-options">
-                        <label>
-                            <input type="checkbox"> I agree to the Terms & Conditions
-                        </label>
-                    </div>
-                    <button class="submit-btn" id="signup-submit">Create Account</button>
-                    <div class="auth-switch">
-                        Already have an account? <a href="#" id="switch-to-login">Login</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <footer>
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-column">
-                        <h3>NovaMind</h3>
-                        <p>AI-powered tools for content creators, designers, and developers.</p>
-                        <div class="social-links">
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                    
-                    <div class="footer-column">
-                        <h3>Tools</h3>
-                        <ul>
-                            <li><a href="#">Image Upscaler</a></li>
-                            <li><a href="#">Vocal Remover</a></li>
-                            <li><a href="#">Text to Speech</a></li>
-                            <li><a href="#">Voice Cloner</a></li>
-                            <li><a href="#">Background Remover</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-column">
-                        <h3>Company</h3>
-                        <ul>
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Pricing</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Contact</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-column">
-                        <h3>Support</h3>
-                        <ul>
-                            <li><a href="#">Help Center</a></li>
-                            <li><a href="#">FAQs</a></li>
-                            <li><a href="#">Documentation</a></li>
-                            <li><a href="#">Community</a></li>
-                        </ul>
-                    </div>
-                </div>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>NovaMind</span>
+                </a>
                 
-                <div class="copyright">
-                    <p>&copy; 2023 NovaMind. All rights reserved.</p>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                        <li><a href="plans.html">Plans</a></li>
+                        <li><a href="settings.html">Settings</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="user-info">
+                    <div class="user-avatar">JS</div>
+                    <div class="user-name">John Smith</div>
                 </div>
             </div>
-        </footer>
-    </div>
+        </div>
+    </header>
 
-    <!-- Dashboard (hidden by default) -->
-    <div id="dashboard">
-        <header>
-            <div class="container">
-                <div class="header-content">
-                    <a href="#" class="logo">
-                        <i class="fas fa-brain"></i>
-                        <span>NovaMind</span>
-                    </a>
-                    
-                    <nav>
-                        <ul>
-                            <li><a href="#" class="active">Dashboard</a></li>
-                            <li><a href="#">Tools</a></li>
-                            <li><a href="#">History</a></li>
-                            <li><a href="#">Settings</a></li>
-                        </ul>
-                    </nav>
-                    
-                    <div class="user-info">
-                        <div class="user-avatar">JS</div>
-                        <div class="user-name">John Smith</div>
-                    </div>
-                </div>
-            </div>
-        </header>
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-expand"></i>
+                    <span>Image Upscaler</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-microphone-alt"></i>
+                    <span>Vocal Remover</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-text-height"></i>
+                    <span>Text to Speech</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-clone"></i>
+                    <span>Voice Cloner</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-cut"></i>
+                    <span>Background Remover</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-film"></i>
+                    <span>Text to Video</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-image"></i>
+                    <span>Image Generator</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-video"></i>
+                    <span>Video Enhancer</span>
+                </li>
+            </ul>
+        </div>
 
-        <div class="dashboard-container container">
+        <!-- Main Content -->
+        <div class="dashboard-content">
             <div class="dashboard-header">
                 <div class="welcome-message">
                     <h1>Welcome back, John!</h1>
-                    <p>Which tool would you like to use today?</p>
+                    <p>Here's what's happening with your NovaMind tools today</p>
                 </div>
                 
                 <button class="btn btn-primary">Upgrade Plan</button>
             </div>
             
-            <div class="dashboard-tools">
-                <div class="tool-card">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">128</div>
+                    <div class="stat-label">Images Processed</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-audio"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">Audio Files Processed</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">Current Capacity</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">Basic</div>
+                    <div class="stat-label">Current Plan</div>
+                </div>
+            </div>
+            
+            <!-- Tools Grid -->
+            <h2 style="margin-bottom: 20px;">AI Tools</h2>
+            <div class="tools-grid">
+                <div class="tool-card" data-tool="image-upscaler">
                     <div class="tool-icon">
                         <i class="fas fa-expand"></i>
                     </div>
                     <h3>Image Upscaler</h3>
                     <p>Increase image resolution without losing quality.</p>
-                    <button class="btn btn-primary" id="use-upscaler">Use Tool</button>
+                    <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="vocal-remover">
                     <div class="tool-icon">
                         <i class="fas fa-microphone-alt"></i>
                     </div>
                     <h3>Vocal Remover</h3>
                     <p>Remove vocals from any song.</p>
-                    <button class="btn btn-primary">Use Tool</button>
+                    <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="text-to-speech">
                     <div class="tool-icon">
                         <i class="fas fa-text-height"></i>
                     </div>
                     <h3>Text to Speech</h3>
                     <p>Convert text into natural speech.</p>
-                    <button class="btn btn-primary">Use Tool</button>
+                    <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="voice-cloner">
                     <div class="tool-icon">
                         <i class="fas fa-clone"></i>
                     </div>
@@ -921,16 +647,16 @@
                     <span class="status-badge status-soon">Coming Soon</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="background-remover">
                     <div class="tool-icon">
                         <i class="fas fa-cut"></i>
                     </div>
                     <h3>Background Remover</h3>
                     <p>Remove backgrounds from images.</p>
-                    <button class="btn btn-primary">Use Tool</button>
+                    <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="text-to-video">
                     <div class="tool-icon">
                         <i class="fas fa-film"></i>
                     </div>
@@ -939,16 +665,16 @@
                     <span class="status-badge status-soon">Coming Soon</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="image-generator">
                     <div class="tool-icon">
                         <i class="fas fa-image"></i>
                     </div>
                     <h3>Image Generator</h3>
                     <p>Create images from text.</p>
-                    <button class="btn btn-primary">Use Tool</button>
+                    <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card">
+                <div class="tool-card" data-tool="video-enhancer">
                     <div class="tool-icon">
                         <i class="fas fa-video"></i>
                     </div>
@@ -959,9 +685,9 @@
             </div>
             
             <!-- Image Upscaler Tool Interface -->
-            <div class="tool-interface" id="upscaler-interface" style="display: none; margin-top: 40px;">
+            <div class="tool-interface" id="image-upscaler-interface">
                 <div class="tool-header">
-                    <i class="fas fa-expand tool-icon"></i>
+                    <i class="fas fa-expand"></i>
                     <h2>Image Upscaler</h2>
                 </div>
                 
@@ -1011,90 +737,64 @@
     </div>
 
     <script>
-        // Auth Modals Functionality
-        const loginBtn = document.getElementById('login-btn');
-        const signupBtn = document.getElementById('signup-btn');
-        const loginModal = document.getElementById('login-modal');
-        const signupModal = document.getElementById('signup-modal');
-        const closeModalButtons = document.querySelectorAll('.close-modal');
-        const switchToSignup = document.getElementById('switch-to-signup');
-        const switchToLogin = document.getElementById('switch-to-login');
-        const loginSubmit = document.getElementById('login-submit');
-        const signupSubmit = document.getElementById('signup-submit');
+        // Tool selection functionality
+        const toolCards = document.querySelectorAll('.tool-card');
+        const toolInterface = document.getElementById('image-upscaler-interface');
         
-        // Dashboard elements
-        const landingPage = document.getElementById('landing-page');
-        const dashboard = document.getElementById('dashboard');
-        const useUpscalerBtn = document.getElementById('use-upscaler');
-        const upscalerInterface = document.getElementById('upscaler-interface');
-        
-        // Show login modal
-        loginBtn.addEventListener('click', () => {
-            loginModal.style.display = 'flex';
-        });
-        
-        // Show signup modal
-        signupBtn.addEventListener('click', () => {
-            signupModal.style.display = 'flex';
-        });
-        
-        // Close modals
-        closeModalButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                loginModal.style.display = 'none';
-                signupModal.style.display = 'none';
+        toolCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const tool = card.getAttribute('data-tool');
+                
+                // Hide all tool interfaces
+                document.querySelectorAll('.tool-interface').forEach(interface => {
+                    interface.style.display = 'none';
+                });
+                
+                // Show selected tool interface
+                if (tool === 'image-upscaler') {
+                    toolInterface.style.display = 'block';
+                    
+                    // Scroll to the tool interface
+                    toolInterface.scrollIntoView({ behavior: 'smooth' });
+                }
+                
+                // Update sidebar active item
+                document.querySelectorAll('.sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Find and activate the corresponding sidebar item
+                const sidebarItems = document.querySelectorAll('.sidebar-item');
+                for (let i = 0; i < sidebarItems.length; i++) {
+                    if (sidebarItems[i].textContent.toLowerCase().includes(tool.replace('-', ' '))) {
+                        sidebarItems[i].classList.add('active');
+                        break;
+                    }
+                }
             });
         });
         
-        // Switch to signup modal
-        switchToSignup.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginModal.style.display = 'none';
-            signupModal.style.display = 'flex';
-        });
-        
-        // Switch to login modal
-        switchToLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            signupModal.style.display = 'none';
-            loginModal.style.display = 'flex';
-        });
-        
-        // Login functionality (simplified)
-        loginSubmit.addEventListener('click', () => {
-            // In a real app, you would validate credentials against Supabase
-            // For demo purposes, we'll just show the dashboard
-            landingPage.style.display = 'none';
-            dashboard.style.display = 'block';
-            loginModal.style.display = 'none';
-        });
-        
-        // Signup functionality (simplified)
-        signupSubmit.addEventListener('click', () => {
-            // In a real app, you would create a new user in Supabase
-            // For demo purposes, we'll just show the dashboard
-            landingPage.style.display = 'none';
-            dashboard.style.display = 'block';
-            signupModal.style.display = 'none';
-        });
-        
-        // Open image upscaler tool
-        useUpscalerBtn.addEventListener('click', () => {
-            upscalerInterface.style.display = 'block';
-            window.scrollTo({
-                top: upscalerInterface.offsetTop - 100,
-                behavior: 'smooth'
+        // Sidebar item click functionality
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                document.querySelectorAll('.sidebar-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Hide all tool interfaces
+                document.querySelectorAll('.tool-interface').forEach(interface => {
+                    interface.style.display = 'none';
+                });
+                
+                // If dashboard is clicked, scroll to top
+                if (this.textContent.includes('Dashboard')) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             });
-        });
-        
-        // Close modals if clicked outside
-        window.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
-                loginModal.style.display = 'none';
-            }
-            if (e.target === signupModal) {
-                signupModal.style.display = 'none';
-            }
         });
         
         // Simulate image upscaling process
