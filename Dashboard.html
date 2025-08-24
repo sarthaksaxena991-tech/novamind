@@ -174,11 +174,19 @@
             cursor: pointer;
             transition: all 0.3s;
             border: none;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-primary {
             background: var(--primary);
             color: white;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
         
         .btn:hover {
@@ -294,137 +302,25 @@
             color: var(--accent);
         }
         
-        /* Tool Interface */
-        .tool-interface {
+        /* External Link Card */
+        .external-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             padding: 25px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: 30px;
-            display: none;
+            text-align: center;
         }
         
-        .tool-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .tool-header h2 {
+        .external-card h2 {
+            margin-bottom: 15px;
             font-size: 1.6rem;
         }
         
-        .upload-area {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 25px;
-        }
-        
-        .upload-area:hover {
-            border-color: var(--primary);
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-        
-        .tool-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .option-group {
-            margin-bottom: 20px;
-        }
-        
-        .option-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .option-group select, .option-group input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--light);
-            font-size: 1rem;
-        }
-        
-        .process-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .process-btn:hover {
-            background: var(--secondary);
-        }
-        
-        .results-area {
-            margin-top: 30px;
-            display: none;
-        }
-        
-        .results-area h3 {
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-        
-        .comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .image-container {
-            border-radius: 10px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.2);
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .image-container p {
+        .external-card p {
             color: var(--gray);
-        }
-        
-        .download-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 25px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .download-btn:hover {
-            background: #3db893;
+            margin-bottom: 25px;
         }
         
         /* Responsive Design */
@@ -451,10 +347,6 @@
             }
             
             .tools-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tool-options {
                 grid-template-columns: 1fr;
             }
         }
@@ -519,7 +411,7 @@
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </li>
-                <li class="sidebar-item">
+                <li class="sidebar-item" id="image-upscaler-link">
                     <i class="fas fa-expand"></i>
                     <span>Image Upscaler</span>
                 </li>
@@ -611,7 +503,7 @@
             <!-- Tools Grid -->
             <h2 style="margin-bottom: 20px;">AI Tools</h2>
             <div class="tools-grid">
-                <div class="tool-card" data-tool="image-upscaler">
+                <div class="tool-card" id="image-upscaler-card">
                     <div class="tool-icon">
                         <i class="fas fa-expand"></i>
                     </div>
@@ -620,7 +512,7 @@
                     <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card" data-tool="vocal-remover">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-microphone-alt"></i>
                     </div>
@@ -629,7 +521,7 @@
                     <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card" data-tool="text-to-speech">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-text-height"></i>
                     </div>
@@ -638,7 +530,7 @@
                     <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card" data-tool="voice-cloner">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-clone"></i>
                     </div>
@@ -647,7 +539,7 @@
                     <span class="status-badge status-soon">Coming Soon</span>
                 </div>
                 
-                <div class="tool-card" data-tool="background-remover">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-cut"></i>
                     </div>
@@ -656,7 +548,7 @@
                     <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card" data-tool="text-to-video">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-film"></i>
                     </div>
@@ -665,7 +557,7 @@
                     <span class="status-badge status-soon">Coming Soon</span>
                 </div>
                 
-                <div class="tool-card" data-tool="image-generator">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-image"></i>
                     </div>
@@ -674,7 +566,7 @@
                     <span class="status-badge status-available">Available</span>
                 </div>
                 
-                <div class="tool-card" data-tool="video-enhancer">
+                <div class="tool-card">
                     <div class="tool-icon">
                         <i class="fas fa-video"></i>
                     </div>
@@ -684,53 +576,24 @@
                 </div>
             </div>
             
-            <!-- Image Upscaler Tool Interface -->
-            <div class="tool-interface" id="image-upscaler-interface">
+            <!-- Image Upscaler External Link Card -->
+            <div class="external-card" id="image-upscaler-external" style="display: none;">
                 <div class="tool-header">
                     <i class="fas fa-expand"></i>
                     <h2>Image Upscaler</h2>
                 </div>
                 
-                <div class="upload-area">
-                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                    <h3>Drag & Drop your image here</h3>
-                    <p>or click to browse files</p>
-                    <input type="file" style="display: none;">
-                </div>
+                <p>Our Image Upscaler tool is hosted on a separate platform for optimal performance.</p>
+                <p>Click the button below to access the image upscaler:</p>
                 
-                <div class="tool-options">
-                    <div class="option-group">
-                        <label for="scale-factor">Scale Factor</label>
-                        <select id="scale-factor">
-                            <option value="2">2x</option>
-                            <option value="4" selected>4x</option>
-                            <option value="8">8x</option>
-                        </select>
-                    </div>
-                    
-                    <div class="option-group">
-                        <label for="output-format">Output Format</label>
-                        <select id="output-format">
-                            <option value="jpg">JPG</option>
-                            <option value="png" selected>PNG</option>
-                            <option value="webp">WebP</option>
-                        </select>
-                    </div>
-                </div>
+                <a href="https://novamind-imae-enhancer.onrender.com" target="_blank" class="btn btn-primary">
+                    Open Image Upscaler
+                </a>
                 
-                <button class="process-btn">Upscale Image</button>
-                
-                <div class="results-area">
-                    <h3>Results</h3>
-                    <div class="comparison">
-                        <div class="image-container">
-                            <p>Original Image</p>
-                        </div>
-                        <div class="image-container">
-                            <p>Upscaled Image</p>
-                        </div>
-                    </div>
-                    <button class="download-btn">Download Upscaled Image</button>
+                <div style="margin-top: 20px;">
+                    <a href="#" class="btn btn-secondary" id="back-to-dashboard">
+                        Back to Dashboard
+                    </a>
                 </div>
             </div>
         </div>
@@ -738,73 +601,74 @@
 
     <script>
         // Tool selection functionality
-        const toolCards = document.querySelectorAll('.tool-card');
-        const toolInterface = document.getElementById('image-upscaler-interface');
+        const imageUpscalerCard = document.getElementById('image-upscaler-card');
+        const imageUpscalerLink = document.getElementById('image-upscaler-link');
+        const externalCard = document.getElementById('image-upscaler-external');
+        const backButton = document.getElementById('back-to-dashboard');
         
-        toolCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const tool = card.getAttribute('data-tool');
-                
-                // Hide all tool interfaces
-                document.querySelectorAll('.tool-interface').forEach(interface => {
-                    interface.style.display = 'none';
-                });
-                
-                // Show selected tool interface
-                if (tool === 'image-upscaler') {
-                    toolInterface.style.display = 'block';
-                    
-                    // Scroll to the tool interface
-                    toolInterface.scrollIntoView({ behavior: 'smooth' });
-                }
-                
-                // Update sidebar active item
-                document.querySelectorAll('.sidebar-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                
-                // Find and activate the corresponding sidebar item
-                const sidebarItems = document.querySelectorAll('.sidebar-item');
-                for (let i = 0; i < sidebarItems.length; i++) {
-                    if (sidebarItems[i].textContent.toLowerCase().includes(tool.replace('-', ' '))) {
-                        sidebarItems[i].classList.add('active');
-                        break;
-                    }
-                }
+        // Function to show the external tool card
+        function showExternalTool() {
+            document.querySelectorAll('.tool-interface').forEach(interface => {
+                interface.style.display = 'none';
             });
-        });
+            
+            // Hide tools grid and show external card
+            document.querySelector('.tools-grid').style.display = 'none';
+            externalCard.style.display = 'block';
+            
+            // Update sidebar active item
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            imageUpscalerLink.classList.add('active');
+            
+            // Scroll to the external card
+            externalCard.scrollIntoView({ behavior: 'smooth' });
+        }
         
-        // Sidebar item click functionality
+        // Function to return to dashboard
+        function backToDashboard() {
+            externalCard.style.display = 'none';
+            document.querySelector('.tools-grid').style.display = 'grid';
+            
+            // Update sidebar active item
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector('.sidebar-item:first-child').classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Event listeners
+        imageUpscalerCard.addEventListener('click', showExternalTool);
+        imageUpscalerLink.addEventListener('click', showExternalTool);
+        backButton.addEventListener('click', backToDashboard);
+        
+        // Sidebar item click functionality for other items
         document.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Remove active class from all items
-                document.querySelectorAll('.sidebar-item').forEach(i => {
-                    i.classList.remove('active');
+            if (!item.id) {
+                item.addEventListener('click', function() {
+                    if (!this.textContent.includes('Image Upscaler')) {
+                        // Remove active class from all items
+                        document.querySelectorAll('.sidebar-item').forEach(i => {
+                            i.classList.remove('active');
+                        });
+                        
+                        // Add active class to clicked item
+                        this.classList.add('active');
+                        
+                        // Hide external card and show tools grid
+                        externalCard.style.display = 'none';
+                        document.querySelector('.tools-grid').style.display = 'grid';
+                        
+                        // If dashboard is clicked, scroll to top
+                        if (this.textContent.includes('Dashboard')) {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    }
                 });
-                
-                // Add active class to clicked item
-                this.classList.add('active');
-                
-                // Hide all tool interfaces
-                document.querySelectorAll('.tool-interface').forEach(interface => {
-                    interface.style.display = 'none';
-                });
-                
-                // If dashboard is clicked, scroll to top
-                if (this.textContent.includes('Dashboard')) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            });
-        });
-        
-        // Simulate image upscaling process
-        document.querySelector('.process-btn').addEventListener('click', function() {
-            if (this.textContent === 'Upscale Image') {
-                this.textContent = 'Processing...';
-                setTimeout(() => {
-                    this.textContent = 'Upscale Image';
-                    document.querySelector('.results-area').style.display = 'block';
-                }, 2000);
             }
         });
     </script>
