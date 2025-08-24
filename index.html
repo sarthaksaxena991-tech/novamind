@@ -1,158 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Hub</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaMind - Main</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <!-- ===== Nav ===== -->
-  <header class="nav">
-    <div class="wrap">
-      <a class="brand" href="index.html">AI Hub</a>
-      <nav class="navlinks">
-        <a href="#start">Start</a>
-        <a href="#features">Features</a>
-        <a href="#resources">Resources</a>
-        <a href="#help">Help</a>
-        <a href="#pricing">Pricing</a>
-      </nav>
-      <div class="navcta">
-        <a class="btn ghost" href="login.html">Login</a>
-        <a class="btn solid" href="signup.html">Get started</a>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <!-- ===== Hero ===== -->
-    <section class="hero wrap" id="start">
-      <div class="chip">More than a website builder</div>
-      <h1>Your site should do more<br/>than look good</h1>
-      <p class="sub">AI Hub unites marketers, designers, and developers to create, manage, and optimize impactful web experiences.</p>
-      <div class="cta">
-        <a class="btn solid lg" href="Dashboard.html">Start Building Now</a>
-        <a class="btn ghost lg" href="#video">Watch video</a>
-      </div>
-
-      <!-- Mock app frame -->
-      <div class="frame">
-        <div class="frame-top">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <div class="tabs">
-            <span class="tab active">HR Manage</span>
-            <span class="tab">Analytics</span>
-            <span class="tab">Settings</span>
-          </div>
-          <div style="margin-left:auto;width:28px;height:28px;border-radius:50%;background:linear-gradient(180deg,#8a6dff,#b06cff)"></div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-brain"></i> NovaMind
+            </a>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="plans.html" class="nav-link">Plans</a>
+                <a href="login.html" class="nav-link">Login</a>
+                <a href="signup.html" class="nav-link">Sign Up</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
         </div>
-        <div class="frame-body">
-          <div class="panel">
-            <div class="panel-title">Add Elements</div>
-            <ul class="panel-list">
-              <li>Upload Media</li>
-              <li>Create Website</li>
-              <li>Analytics</li>
-              <li>Automation</li>
-            </ul>
-            <a class="btn outline" href="Dashboard.html">Generate</a>
-          </div>
+    </nav>
 
-          <div class="panel center">
-            <div class="video" id="video" aria-label="preview"></div>
-            <div class="stats">
-              <div class="stat"><span class="k">₹52,000</span><span class="s">Monthly</span></div>
-              <div class="stat"><span class="k">98%</span><span class="s">Uptime</span></div>
-              <div class="stat"><span class="k">4.9</span><span class="s">Rating</span></div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI-Powered Creativity Suite</h1>
+            <p>Transform your content with our cutting-edge AI tools</p>
+            <div class="hero-buttons">
+                <a href="signup.html" class="btn btn-primary">Get Started</a>
+                <a href="#tools" class="btn btn-secondary">Explore Tools</a>
             </div>
-          </div>
-
-          <div class="panel">
-            <div class="card">
-              <div class="card-title">Selector</div>
-              <div class="row"></div><div class="row"></div><div class="row"></div>
-            </div>
-            <div class="card">
-              <div class="card-title">Spacing</div>
-              <div class="slider"></div>
-            </div>
-          </div>
         </div>
-      </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="AI Technology">
+        </div>
     </section>
 
-    <!-- ===== Features strip ===== -->
-    <section class="strip" id="features">
-      <div class="wrap">
-        <div class="pill">Image Upscaler</div>
-        <div class="pill">Video Enhancer</div>
-        <div class="pill">Voice Clone</div>
-        <div class="pill">Background Remover</div>
-        <div class="pill">Text → Video</div>
-      </div>
+    <!-- Tools Section -->
+    <section id="tools" class="tools-section">
+        <div class="container">
+            <h2 class="section-title">Our AI Tools</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                    <h3>Image Upscaler</h3>
+                    <p>Increase image resolution without losing quality</p>
+                    <span class="status available">Available</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h3>Vocal Remover</h3>
+                    <p>Remove vocals from any song</p>
+                    <span class="status available">Available</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-text-height"></i>
+                    </div>
+                    <h3>Text to Speech</h3>
+                    <p>Convert text into natural speech</p>
+                    <span class="status available">Available</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-clone"></i>
+                    </div>
+                    <h3>Voice Cloner</h3>
+                    <p>Replicate any voice</p>
+                    <span class="status soon">Coming Soon</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <h3>Background Remover</h3>
+                    <p>Remove backgrounds from images</p>
+                    <span class="status available">Available</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h3>Text to Video</h3>
+                    <p>Generate videos from text</p>
+                    <span class="status soon">Coming Soon</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3>Image Generator</h3>
+                    <p>Create images from text</p>
+                    <span class="status available">Available</span>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3>Video Enhancer</h3>
+                    <p>Enhance video quality</p>
+                    <span class="status soon">Coming Soon</span>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <!-- ===== Pricing ===== -->
-    <section class="pricing wrap" id="pricing">
-      <h2>Choose Your Plan</h2>
-      <div class="cards">
-        <div class="card pricecard">
-          <h3>Free</h3>
-          <p class="price">₹0 <span>/month</span></p>
-          <ul>
-            <li>5 AI tools</li>
-            <li>2 projects</li>
-            <li>Community support</li>
-          </ul>
-          <a class="btn outline" href="signup.html">Select</a>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>NovaMind</h3>
+                    <p>AI-powered tools for content creators</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="plans.html">Plans</a></li>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="signup.html">Sign Up</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Tools</h3>
+                    <ul>
+                        <li><a href="#">Image Upscaler</a></li>
+                        <li><a href="#">Vocal Remover</a></li>
+                        <li><a href="#">Text to Speech</a></li>
+                        <li><a href="#">Voice Cloner</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 NovaMind. All rights reserved.</p>
+            </div>
         </div>
+    </footer>
 
-        <div class="card pricecard pro">
-          <div class="badge">Popular</div>
-          <h3>Pro</h3>
-          <p class="price">₹499 <span>/month</span></p>
-          <ul>
-            <li>15 AI tools</li>
-            <li>10 projects</li>
-            <li>Email support</li>
-          </ul>
-          <a class="btn solid" href="signup.html">Select</a>
-        </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector(".hamburger");
+        const navMenu = document.querySelector(".nav-menu");
 
-        <div class="card pricecard">
-          <h3>Enterprise</h3>
-          <p class="price">Contact</p>
-          <ul>
-            <li>All tools</li>
-            <li>Unlimited projects</li>
-            <li>Premium support</li>
-          </ul>
-          <a class="btn outline" href="mailto:support@yourdomain.com">Talk to us</a>
-        </div>
-      </div>
-    </section>
-  </main>
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navMenu.classList.toggle("active");
+        });
 
-  <!-- ===== Footer ===== -->
-  <footer class="foot">
-    <div class="wrap">
-      <span>© 2025 AI Hub</span>
-      <div>
-        <a href="#resources">Resources</a>
-        <a href="#help">Help</a>
-        <a href="plans.html">Plans</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Config (set your Render API base if needed) -->
-  <script>window.NOVAMIND_API = "https://YOUR-RENDER-APP.onrender.com";</script>
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- App auth + upscaler wiring -->
-  <script src="js/auth.js" defer></script>
+        document.querySelectorAll(".nav-link").forEach(n => n.addEventListener("click", () => {
+            hamburger.classList.remove("active");
+            navMenu.classList.remove("active");
+        }));
+    </script>
 </body>
 </html>
