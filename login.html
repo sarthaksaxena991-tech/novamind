@@ -1,115 +1,203 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaMind - Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NovaMind — Login</title>
+
+  <!-- Simple styles -->
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#6ee7b7}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#071025 0%,#081327 100%);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:420px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:28px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .logo{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+    .logo .icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#2dd4bf,#60a5fa);display:grid;place-items:center;color:#052024;font-weight:700}
+    h1{font-size:20px;margin:0 0 8px}
+    p.lead{margin:0;margin-bottom:18px;color:var(--muted);font-size:13px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=email],input[type=password]{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.01);color:inherit;font-size:14px}
+    .row{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .checkbox{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;border:0;background:var(--accent);color:#042018;font-weight:600;cursor:pointer}
+    .link{color:#9fb6ff;text-decoration:none;font-size:13px}
+    .switch{margin-top:14px;color:var(--muted);font-size:13px}
+    .alert{display:none;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px}
+    .alert.success{background:rgba(34,197,94,0.12);color:#bbf7d0;border:1px solid rgba(34,197,94,0.18)}
+    .alert.error{background:rgba(239,68,68,0.08);color:#ffd6d6;border:1px solid rgba(239,68,68,0.14)}
+    .small{font-size:12px;color:var(--muted)}
+  </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="logo">
-            <i class="fas fa-brain"></i>
-            <span>NovaMind</span>
-        </div>
-        
-        <div class="auth-form">
-            <h2>Login to NovaMind</h2>
-            
-            <div id="alertBox" class="alert">
-                <span id="alertMessage"></span>
-            </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" placeholder="Enter your email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter your password" required>
-                </div>
-                
-                <div class="form-options">
-                    <label>
-                        <input type="checkbox" id="remember"> Remember me
-                    </label>
-                    <a href="#">Forgot password?</a>
-                </div>
-                
-                <button type="submit" class="submit-btn" id="login-submit">Login</button>
-            </form>
-            
-            <div class="auth-switch">
-                Don't have an account? <a href="signup.html">Sign up</a>
-            </div>
-        </div>
+  <main class="card" role="main" aria-labelledby="heading">
+    <div class="logo">
+      <div class="icon">NM</div>
+      <div>
+        <h1 id="heading">NovaMind</h1>
+        <p class="lead">Log in to manage your tools and dashboard.</p>
+      </div>
     </div>
 
-    <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/auth.js"></script>
-    
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('login-submit');
-            const alertBox = document.getElementById('alertBox');
-            const alertMessage = document.getElementById('alertMessage');
-            
-            // Get form values
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            // Change button text
-            submitBtn.textContent = 'Logging in...';
-            submitBtn.disabled = true;
-            
-            // Sign in with Supabase
-            const result = await signIn(email, password);
-            
-            if (result.success) {
-                showAlert('Login successful! Redirecting to dashboard...', 'success');
-                
-                // Redirect to dashboard after 2 seconds
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 2000);
-            } else {
-                showAlert(result.error, 'error');
-                submitBtn.textContent = 'Login';
-                submitBtn.disabled = false;
-            }
+    <div id="alertBox" class="alert" role="alert"><span id="alertMessage"></span></div>
+
+    <form id="loginForm" autocomplete="on" novalidate>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="you@domain.com" required />
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Your password" required />
+      </div>
+
+      <div class="row" style="justify-content:space-between;margin-top:14px">
+        <label class="checkbox"><input id="remember" type="checkbox" /> Remember</label>
+        <a class="link" id="forgot" href="javascript:void(0)">Forgot password?</a>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;align-items:center">
+        <button id="submitBtn" type="submit" class="btn">Login</button>
+        <div class="small">or <a href="signup.html" class="link">Create account</a></div>
+      </div>
+
+      <p class="small" style="margin-top:12px;color:var(--muted)">
+        Note: Replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in the script below with your project values.
+      </p>
+    </form>
+  </main>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+
+  <script>
+    // ========== CONFIG ==========
+    // Replace these with your Supabase project values.
+    // From Supabase dashboard -> Settings -> API
+    const SUPABASE_URL = 'https:/vdbjltfyoxmiijuwjlur.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
+    // ============================
+
+    // Initialize client
+    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const el = {
+      form: document.getElementById('loginForm'),
+      email: document.getElementById('email'),
+      password: document.getElementById('password'),
+      submitBtn: document.getElementById('submitBtn'),
+      alertBox: document.getElementById('alertBox'),
+      alertMessage: document.getElementById('alertMessage'),
+      forgot: document.getElementById('forgot')
+    };
+
+    // Helper: show alert
+    function showAlert(msg, type = 'error') {
+      el.alertMessage.textContent = msg;
+      el.alertBox.className = `alert ${type === 'success' ? 'success' : 'error'}`;
+      el.alertBox.style.display = 'block';
+      el.alertBox.scrollIntoView({behavior:'smooth'});
+    }
+
+    // Helper: clear alert
+    function clearAlert() {
+      el.alertBox.style.display = 'none';
+      el.alertMessage.textContent = '';
+    }
+
+    // Attempt auto-redirect if already logged in
+    (async function checkLoggedIn() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          // session exists
+          window.location.href = 'dashboard.html';
+        }
+      } catch (err) {
+        // ignore
+      }
+    })();
+
+    // Login handler
+    el.form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAlert();
+
+      const email = el.email.value.trim();
+      const password = el.password.value;
+
+      if (!email || !password) {
+        showAlert('Email and password required.');
+        return;
+      }
+
+      el.submitBtn.disabled = true;
+      el.submitBtn.textContent = 'Logging in...';
+
+      try {
+        // v2 API: signInWithPassword
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          // common actionable messages
+          showAlert(error.message || 'Login failed.');
+          el.submitBtn.disabled = false;
+          el.submitBtn.textContent = 'Login';
+          return;
+        }
+
+        // success
+        showAlert('Login successful. Redirecting...', 'success');
+
+        // Optionally set a cookie or localStorage for "remember"
+        if (document.getElementById('remember').checked) {
+          // Supabase client uses persistent session by default in browser
+        }
+
+        // Redirect
+        setTimeout(() => (window.location.href = 'dashboard.html'), 900);
+      } catch (err) {
+        console.error(err);
+        showAlert('Unexpected error. Check console.');
+        el.submitBtn.disabled = false;
+        el.submitBtn.textContent = 'Login';
+      }
+    });
+
+    // Forgot password flow: simple prompt that triggers Supabase reset email
+    el.forgot.addEventListener('click', async () => {
+      clearAlert();
+      const email = prompt('Enter your account email for password reset:');
+      if (!email) return;
+      el.submitBtn.disabled = true;
+      try {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/reset-success.html'
         });
-        
-        function showAlert(message, type) {
-            const alertBox = document.getElementById('alertBox');
-            const alertMessage = document.getElementById('alertMessage');
-            
-            alertMessage.textContent = message;
-            alertBox.className = `alert alert-${type}`;
-            alertBox.style.display = 'block';
-            
-            // Scroll to alert
-            alertBox.scrollIntoView({ behavior: 'smooth' });
+        if (error) {
+          showAlert(error.message || 'Could not send reset email.');
+        } else {
+          showAlert('Password reset email sent. Check inbox.', 'success');
         }
-        
-        // Check if user is already logged in
-        async function checkAuthStatus() {
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-                // User is already logged in, redirect to dashboard
-                window.location.href = 'dashboard.html';
-            }
-        }
-        
-        // Check auth status on page load
-        checkAuthStatus();
-    </script>
+      } catch (err) {
+        console.error(err);
+        showAlert('Unexpected error sending reset email.');
+      } finally {
+        el.submitBtn.disabled = false;
+      }
+    });
+
+    // ========== IMPORTANT NOTES ==========
+    // 1) In Supabase dashboard -> Authentication -> Settings:
+    //    - Add https://novomind.in and https://www.novomind.in to "Site URL" and "Redirect URLs".
+    //    - Ensure "Allow sign ups" is enabled if you want open signups.
+    //
+    // 2) If you host on GitHub Pages, your public anon key must be baked at build time or placed directly in this file.
+    //    Do not use the service_role key client-side.
+    //
+    // 3) For OAuth providers (Google/GitHub) configure redirect URIs in Supabase Auth -> Providers.
+    //
+    // 4) If you see CORS or network errors in browser console, check the allowed origins in Supabase settings.
+    // =======================================
+  </script>
 </body>
 </html>
