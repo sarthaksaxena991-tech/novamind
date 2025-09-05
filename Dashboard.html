@@ -1,693 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script>
-const SUPABASE_URL = 'https://vdbjltfyoxmiijuwjlur.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// check session on page load
-(async () => {
-  const { data } = await supabaseClient.auth.getSession();
-  if (!data.session) {
-    // not logged in → go back to login
-    window.location.href = 'login.html';
-  }
-})();
-</script>
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaMind - Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Global Styles */
-        :root {
-            --primary: #6c63ff;
-            --secondary: #4a44c9;
-            --accent: #ff6b6b;
-            --dark: #1a1a2e;
-            --darker: #16213e;
-            --light: #f8f9fa;
-            --gray: #e2e2e2;
-            --success: #4cc9a4;
-            --sidebar-width: 250px;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, var(--darker), var(--dark));
-            color: var(--light);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header Styles */
-        header {
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--light);
-            text-decoration: none;
-        }
-        
-        .logo i {
-            color: var(--primary);
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
-        
-        nav a {
-            color: var(--gray);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-        
-        nav a:hover, nav a.active {
-            color: var(--primary);
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        
-        /* Dashboard Layout */
-        .dashboard-container {
-            display: flex;
-            min-height: calc(100vh - 80px);
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 30px 0;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-        }
-        
-        .sidebar-item {
-            padding: 15px 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--gray);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .sidebar-item:hover, .sidebar-item.active {
-            background: rgba(108, 99, 255, 0.1);
-            color: var(--primary);
-            border-right: 3px solid var(--primary);
-        }
-        
-        .sidebar-item i {
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Main Content */
-        .dashboard-content {
-            flex: 1;
-            padding: 30px;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        
-        .welcome-message h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .welcome-message p {
-            color: var(--gray);
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Dashboard Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-        
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        /* Tools Grid */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .tool-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-        }
-        
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .tool-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 1.8rem;
-        }
-        
-        .tool-card h3 {
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-        
-        .tool-card p {
-            color: var(--gray);
-            margin-bottom: 20px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .status-available {
-            background: rgba(76, 201, 164, 0.2);
-            color: var(--success);
-        }
-        
-        .status-soon {
-            background: rgba(255, 107, 107, 0.2);
-            color: var(--accent);
-        }
-        
-        /* External Link Card */
-        .external-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 30px;
-            text-align: center;
-        }
-        
-        .external-card h2 {
-            margin-bottom: 15px;
-            font-size: 1.6rem;
-        }
-        
-        .external-card p {
-            color: var(--gray);
-            margin-bottom: 25px;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 968px) {
-            .dashboard-container {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-                padding: 0 15px;
-            }
-            
-            .sidebar-item {
-                padding: 15px 20px;
-                white-space: nowrap;
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            nav ul {
-                gap: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .dashboard-header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NovaMind — Dashboard</title>
+  <style>
+    body{font-family:Inter,system-ui,Arial;background:#071025;color:#e6eef6;margin:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px}
+    .wrap{width:100%;max-width:980px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand .logo{width:44px;height:44;border-radius:8px;background:linear-gradient(90deg,#2dd4bf,#60a5fa);display:grid;place-items:center;color:#042024;font-weight:700}
+    h1{margin:0;font-size:18px}
+    .meta{color:#9aa4b2;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:12px}
+    .panel{padding:14px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03)}
+    .btn{display:inline-block;padding:10px 12px;border-radius:8px;border:0;background:#6ee7b7;color:#042018;font-weight:600;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#cfe8ff}
+    .list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+    a.link{color:#9fb6ff;text-decoration:none}
+    .small{font-size:13px;color:#9aa4b2}
+    .danger{background:#ff6b6b;color:#fff}
+    pre{background:#041022;padding:10px;border-radius:8px;overflow:auto;color:#cfe8ff;font-size:13px}
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="index.html" class="logo">
-                    <i class="fas fa-brain"></i>
-                    <span>NovaMind</span>
-                </a>
-                
-                <nav>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="Dashboard.html" class="active">Dashboard</a></li>
-                        <li><a href="plans.html">Plans</a></li>
-                        <li><a href="settings.html">Settings</a></li>
-                    </ul>
-                </nav>
-                
-                <div class="user-info">
-                    <div class="user-avatar">JS</div>
-                    <div class="user-name">John Smith</div>
-                </div>
-            </div>
+  <div class="wrap">
+    <div class="card" id="mainCard">
+      <header>
+        <div class="brand">
+          <div class="logo">NM</div>
+          <div>
+            <h1>NovaMind — Dashboard</h1>
+            <div class="meta" id="userMeta">Loading user...</div>
+          </div>
         </div>
-    </header>
+        <div>
+          <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+        </div>
+      </header>
 
-    <!-- Dashboard Content -->
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <ul class="sidebar-menu">
-                <li class="sidebar-item active">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </li>
-                <li class="sidebar-item" id="image-upscaler-link">
-                    <i class="fas fa-expand"></i>
-                    <span>Image Upscaler</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-microphone-alt"></i>
-                    <span>Vocal Remover</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-text-height"></i>
-                    <span>Text to Speech</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-clone"></i>
-                    <span>Voice Cloner</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-cut"></i>
-                    <span>Background Remover</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-film"></i>
-                    <span>Text to Video</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-image"></i>
-                    <span>Image Generator</span>
-                </li>
-                <li class="sidebar-item">
-                    <i class="fas fa-video"></i>
-                    <span>Video Enhancer</span>
-                </li>
-            </ul>
-        </div>
+      <div class="grid">
+        <section class="panel">
+          <h3>Welcome</h3>
+          <p class="small">This page requires authentication. If you are not logged in you will be redirected to <a class="link" href="login.html">login</a>.</p>
 
-        <!-- Main Content -->
-        <div class="dashboard-content">
-            <div class="dashboard-header">
-                <div class="welcome-message">
-                    <h1>Welcome back, John!</h1>
-                    <p>Here's what's happening with your NovaMind tools today</p>
-                </div>
-                
-                <button class="btn btn-primary">Upgrade Plan</button>
+          <div style="margin-top:12px">
+            <strong>Your session info</strong>
+            <div id="sessionBox" style="margin-top:8px">
+              <pre id="sessionPre">Loading session...</pre>
             </div>
-            
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-image"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">128</div>
-                    <div class="stat-label">Images Processed</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-audio"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">42</div>
-                    <div class="stat-label">Audio Files Processed</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">87%</div>
-                    <div class="stat-label">Current Capacity</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value">Basic</div>
-                    <div class="stat-label">Current Plan</div>
-                </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <strong>Quick links</strong>
+            <div class="list">
+              <a class="link" id="tool1" href="https://tool1.novomind.in" target="_blank">tool1.novomind.in</a>
+              <a class="link" id="tool2" href="https://tool2.novomind.in" target="_blank">tool2.novomind.in</a>
+              <a class="link" id="tool3" href="https://tool3.novomind.in" target="_blank">tool3.novomind.in</a>
             </div>
-            
-            <!-- Tools Grid -->
-            <h2 style="margin-bottom: 20px;">AI Tools</h2>
-            <div class="tools-grid">
-                <div class="tool-card" id="image-upscaler-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-expand"></i>
-                    </div>
-                    <h3>Image Upscaler</h3>
-                    <p>Increase image resolution without losing quality.</p>
-                    <span class="status-badge status-available">Available</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-microphone-alt"></i>
-                    </div>
-                    <h3>Vocal Remover</h3>
-                    <p>Remove vocals from any song.</p>
-                    <span class="status-badge status-available">Available</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-text-height"></i>
-                    </div>
-                    <h3>Text to Speech</h3>
-                    <p>Convert text into natural speech.</p>
-                    <span class="status-badge status-available">Available</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-clone"></i>
-                    </div>
-                    <h3>Voice Cloner</h3>
-                    <p>Replicate any voice.</p>
-                    <span class="status-badge status-soon">Coming Soon</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-cut"></i>
-                    </div>
-                    <h3>Background Remover</h3>
-                    <p>Remove backgrounds from images.</p>
-                    <span class="status-badge status-available">Available</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-film"></i>
-                    </div>
-                    <h3>Text to Video</h3>
-                    <p>Generate videos from text.</p>
-                    <span class="status-badge status-soon">Coming Soon</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-image"></i>
-                    </div>
-                    <h3>Image Generator</h3>
-                    <p>Create images from text.</p>
-                    <span class="status-badge status-available">Available</span>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <h3>Video Enhancer</h3>
-                    <p>Enhance video quality.</p>
-                    <span class="status-badge status-soon">Coming Soon</span>
-                </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <h4>Account</h4>
+          <div id="accountInfo" style="margin-top:8px">
+            <div class="small">Email: <span id="emailSpan">—</span></div>
+            <div class="small" style="margin-top:6px">UID: <span id="uidSpan">—</span></div>
+            <div style="margin-top:12px">
+              <button id="refreshBtn" class="btn btn-ghost">Refresh session</button>
+              <button id="deleteBtn" class="btn danger" style="margin-left:8px">Sign out everywhere</button>
             </div>
-            
-            <!-- Image Upscaler External Link Card -->
-            <div class="external-card" id="image-upscaler-external" style="display: none;">
-                <div class="tool-header">
-                    <i class="fas fa-expand"></i>
-                    <h2>Image Upscaler</h2>
-                </div>
-                
-                <p>Our Image Upscaler tool is hosted on a separate platform for optimal performance.</p>
-                <p>Click the button below to access the image upscaler:</p>
-                
-                <a href="https://novamind-imae-enhancer.onrender.com" target="_blank" class="btn btn-primary">
-                    Open Image Upscaler
-                </a>
-                
-                <div style="margin-top: 20px;">
-                    <a href="#" class="btn btn-secondary" id="back-to-dashboard">
-                        Back to Dashboard
-                    </a>
-                </div>
-            </div>
-        </div>
+          </div>
+        </aside>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Tool selection functionality
-        const imageUpscalerCard = document.getElementById('image-upscaler-card');
-        const imageUpscalerLink = document.getElementById('image-upscaler-link');
-        const externalCard = document.getElementById('image-upscaler-external');
-        const backButton = document.getElementById('back-to-dashboard');
-        
-        // Function to show the external tool card
-        function showExternalTool() {
-            document.querySelectorAll('.tool-interface').forEach(interface => {
-                interface.style.display = 'none';
-            });
-            
-            // Hide tools grid and show external card
-            document.querySelector('.tools-grid').style.display = 'none';
-            externalCard.style.display = 'block';
-            
-            // Update sidebar active item
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            imageUpscalerLink.classList.add('active');
-            
-            // Scroll to the external card
-            externalCard.scrollIntoView({ behavior: 'smooth' });
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script>
+    // Replace with your Supabase values
+    const SUPABASE_URL = 'https://vdbjltfyoxmiijuwjlur.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
+
+    // initialize client
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const emailSpan = document.getElementById('emailSpan');
+    const uidSpan = document.getElementById('uidSpan');
+    const sessionPre = document.getElementById('sessionPre');
+    const userMeta = document.getElementById('userMeta');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    async function requireAuth() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const session = data?.session;
+        if (!session) {
+          // not authenticated
+          window.location.href = 'login.html';
+          return;
         }
-        
-        // Function to return to dashboard
-        function backToDashboard() {
-            externalCard.style.display = 'none';
-            document.querySelector('.tools-grid').style.display = 'grid';
-            
-            // Update sidebar active item
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector('.sidebar-item:first-child').classList.add('active');
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        // Event listeners
-        imageUpscalerCard.addEventListener('click', showExternalTool);
-        imageUpscalerLink.addEventListener('click', showExternalTool);
-        backButton.addEventListener('click', backToDashboard);
-        
-        // Sidebar item click functionality for other items
-        document.querySelectorAll('.sidebar-item').forEach(item => {
-            if (!item.id) {
-                item.addEventListener('click', function() {
-                    if (!this.textContent.includes('Image Upscaler')) {
-                        // Remove active class from all items
-                        document.querySelectorAll('.sidebar-item').forEach(i => {
-                            i.classList.remove('active');
-                        });
-                        
-                        // Add active class to clicked item
-                        this.classList.add('active');
-                        
-                        // Hide external card and show tools grid
-                        externalCard.style.display = 'none';
-                        document.querySelector('.tools-grid').style.display = 'grid';
-                        
-                        // If dashboard is clicked, scroll to top
-                        if (this.textContent.includes('Dashboard')) {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    }
-                });
-            }
-        });
-    </script>
+
+        const user = session.user;
+        emailSpan.textContent = user.email || '—';
+        uidSpan.textContent = user.id || '—';
+        userMeta.textContent = `${user.email || 'User'} • logged in`;
+        sessionPre.textContent = JSON.stringify(session, null, 2);
+      } catch (err) {
+        console.error(err);
+        window.location.href = 'login.html';
+      }
+    }
+
+    // Logout but keep session on other devices (simple signOut)
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'login.html';
+    });
+
+    // Sign out from all sessions (revoke)
+    deleteBtn.addEventListener('click', async () => {
+      deleteBtn.disabled = true;
+      deleteBtn.textContent = 'Signing out everywhere...';
+      try {
+        // revoke all refresh tokens for the user - uses admin endpoint normally.
+        // Best-effort: signOut then redirect.
+        await supabase.auth.signOut();
+      } catch(e){ console.error(e); }
+      window.location.href = 'login.html';
+    });
+
+    refreshBtn.addEventListener('click', async () => {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = 'Refreshing...';
+      try {
+        const { data } = await supabase.auth.getSession();
+        sessionPre.textContent = JSON.stringify(data?.session ?? {}, null, 2);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = 'Refresh session';
+      }
+    });
+
+    // Auto-run auth check on load
+    requireAuth();
+
+    // Optional: listen to auth changes and act
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        // signed out
+        window.location.href = 'login.html';
+      } else {
+        // update display
+        emailSpan.textContent = session.user?.email ?? '—';
+        uidSpan.textContent = session.user?.id ?? '—';
+        sessionPre.textContent = JSON.stringify(session, null, 2);
+      }
+    });
+  </script>
 </body>
 </html>
-
