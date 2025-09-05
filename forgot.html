@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NovaMind — Password reset</title>
+  <style>
+    body{font-family:Arial;background:#071028;color:#eef;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+    .card{padding:24px;background:#081125;border-radius:12px;max-width:420px;width:100%}
+    input{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:none;background:#0b1220;color:#eef}
+    .btn{background:#6f63ff;padding:10px;border-radius:8px;border:0;color:#fff;cursor:pointer}
+    .alert{display:none;padding:8px;border-radius:8px;margin-bottom:12px}
+    .alert.success{background:rgba(34,197,94,0.08);color:#bbf7d0}
+    .alert.error{background:rgba(239,68,68,0.08);color:#ffd6d6}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h3>Reset password</h3>
+    <div id="alert" class="alert"></div>
+    <p style="color:#9aa4b2">Enter your account email to receive a password reset link.</p>
+    <input id="email" type="email" placeholder="you@domain.com" required>
+    <button id="send" class="btn">Send reset email</button>
+    <p style="margin-top:12px"><a href="login.html" style="color:#9fb6ff">Back to login</a></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://vdbjltfyoxmiijuwjlur.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const el = { email: document.getElementById('email'), send: document.getElementById('send'), alert: document.getElementById('alert') };
+
+    function show(msg,type='error'){ el.alert.textContent = msg; el.alert.className = 'alert ' + (type==='success'?'success':'error'); el.alert.style.display='block'; }
+
+    el.send.addEventListener('click', async () => {
+      el.alert.style.display='none';
+      const email = el.email.value.trim();
+      if(!email){ show('Enter your email.'); return; }
+      el.send.disabled = true;
+      el.send.textContent = 'Sending...';
+
+      try {
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+          // redirect URL after user clicks link in email
+          redirectTo: window.location.origin + '/reset-success.html'
+        });
+        if(error){ show(error.message || 'Could not send reset email.'); }
+        else { show('Reset email sent. Check your inbox.', 'success'); }
+      } catch(err){
+        console.error(err); show('Unexpected error.'); 
+      } finally { el.send.disabled=false; el.send.textContent='Send reset email'; }
+    });
+  </script>
+</body>
+</html>
