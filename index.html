@@ -1,17 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NovaMind</title>
-  <style>
-    body{font-family:Arial,system-ui;background:#071028;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0}
-    h1{font-size:36px;margin-bottom:20px}
-    .btn{padding:12px 20px;background:#6f63ff;color:#fff;text-decoration:none;border-radius:8px;font-weight:600}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NovaMind — Home</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <h1>Welcome to NovaMind</h1>
-  <a href="signup.html" class="btn">Get Started</a>
+<body class="page-landing">
+  <header class="topbar">
+    <img src="assets/logo.png" alt="NovaMind" class="logo-small">
+    <nav><a href="login.html" class="btn-ghost">Login</a></nav>
+  </header>
+
+  <main class="center-card">
+    <div class="hero">
+      <img src="assets/logo.png" alt="logo" class="hero-logo">
+      <h1>NovaMind</h1>
+      <p class="lead">Modular AI tools. Fast. Secure. Yours.</p>
+      <div class="actions">
+        <a href="signup.html" class="btn primary">Get started</a>
+        <a href="login.html" class="btn ghost">I already have an account</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">© NovaMind</footer>
 </body>
 </html>
