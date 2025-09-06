@@ -30,58 +30,79 @@
           <button type="submit" class="btn primary">Create account</button>
           <a href="login.html" class="btn ghost">Login</a>
         </div>
+
+        <!-- Google sign-in option -->
+        <div style="margin-top:14px; text-align:center;">
+          <button id="googleBtn" type="button" class="btn ghost">Sign in with Google</button>
+        </div>
       </form>
     </div>
   </div>
 
-  <!-- load scripts in this exact order -->
+  <!-- SCRIPTS (exact order) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/auth.js"></script>
 
   <script>
-  <button id="googleBtn" class="btn ghost">Sign in with Google</button>
-
-<script>
-document.getElementById('googleBtn').addEventListener('click', async () => {
-  await supabaseClient.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + '/dashboard.html' }
-  });
-});
-</script>
-
-    // Wait until shared auth helpers are loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('signupForm');
-      if (!form) return console.warn('signupForm missing');
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        clearAlert();
-
-        const email = (document.getElementById('su-email') || {}).value?.trim() || '';
-        const pwd = (document.getElementById('su-password') || {}).value || '';
-        const conf = (document.getElementById('su-confirm') || {}).value || '';
-
-        if (!email || !pwd) return showAlert('Email and password required');
-        if (pwd !== conf) return showAlert('Passwords do not match');
-
+  // page-specific handlers — runs after auth helpers are loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    // Google OAuth button
+    const g = document.getElementById('googleBtn');
+    if (g) {
+      g.addEventListener('click', async () => {
+        // ensure provider enabled in Supabase and redirect URL whitelisted
         try {
-          const res = await supaSignUp(email, pwd);
-          if (res?.error) {
-            showAlert(res.error?.message || res.error, 'error');
-            return;
-          }
-          showAlert('Signup OK. Check your email if verification is enabled. Redirecting...', 'success');
-          setTimeout(() => location.href = 'dashboard.html', 1200);
+          await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: window.location.origin + '/dashboard.html'
+            }
+          });
+          // user will be redirected to Google's consent screen
         } catch (err) {
-          console.error(err);
-          showAlert('Unexpected error. Check console.', 'error');
+          console.error('Google sign-in error', err);
+          showAlert(err?.message || 'OAuth failed', 'error');
         }
       });
+    }
+
+    // Signup form submit
+    const form = document.getElementById('signupForm');
+    if (!form) return console.warn('signupForm missing');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearAlert();
+
+      const email = (document.getElementById('su-email') || {}).value?.trim() || '';
+      const pwd = (document.getElementById('su-password') || {}).value || '';
+      const conf = (document.getElementById('su-confirm') || {}).value || '';
+
+      if (!email || !pwd) return showAlert('Email and password required');
+      if (pwd !== conf) return showAlert('Passwords do not match');
+
+      try {
+        // Sign up and request redirect for verification links
+        const res = await window.supabaseClient.auth.signUp(
+          { email, password: pwd },
+          { emailRedirectTo: window.location.origin + '/login.html' }
+        );
+
+        if (res?.error) {
+          showAlert(res.error?.message || res.error, 'error');
+          return;
+        }
+
+        // success message
+        showAlert('Signup OK. Check your email for verification link. Redirecting...', 'success');
+        setTimeout(() => location.href = 'login.html', 1400);
+      } catch (err) {
+        console.error(err);
+        showAlert('Unexpected error. Check console.', 'error');
+      }
     });
+  });
   </script>
 </body>
 </html>
-
