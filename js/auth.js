@@ -14,4 +14,5 @@ async function supaSignOut(){ try{ return await supabaseClient.auth.signOut(); }
 async function supaResetPassword(email){
   try{ return await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-success.html' }); }catch(e){ return { error: e } }
 }
-id="alert"
+id="alert";
+
