@@ -1,168 +1,64 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NovaMind — Dashboard</title>
-  <style>
-    body{font-family:Inter,system-ui,Arial;background:#071025;color:#e6eef6;margin:0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px}
-    .wrap{width:100%;max-width:980px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:20px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .brand .logo{width:44px;height:44;border-radius:8px;background:linear-gradient(90deg,#2dd4bf,#60a5fa);display:grid;place-items:center;color:#042024;font-weight:700}
-    h1{margin:0;font-size:18px}
-    .meta{color:#9aa4b2;font-size:13px}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:12px}
-    .panel{padding:14px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03)}
-    .btn{display:inline-block;padding:10px 12px;border-radius:8px;border:0;background:#6ee7b7;color:#042018;font-weight:600;cursor:pointer}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#cfe8ff}
-    .list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-    a.link{color:#9fb6ff;text-decoration:none}
-    .small{font-size:13px;color:#9aa4b2}
-    .danger{background:#ff6b6b;color:#fff}
-    pre{background:#041022;padding:10px;border-radius:8px;overflow:auto;color:#cfe8ff;font-size:13px}
-  </style>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Dashboard — NovaMind</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="wrap">
-    <div class="card" id="mainCard">
-      <header>
-        <div class="brand">
-          <div class="logo">NM</div>
-          <div>
-            <h1>NovaMind — Dashboard</h1>
-            <div class="meta" id="userMeta">Loading user...</div>
-          </div>
-        </div>
+  <div class="dash-wrap">
+    <aside class="sidebar glow">
+      <img src="assets/logo.png" class="brand" alt="NovaMind logo">
+      <nav class="menu">
+        <a href="#" class="active">Overview</a>
+        <a href="plans.html">Tools</a>
+        <a href="settings.html">Settings</a>
+        <a id="signout" href="#">Sign out</a>
+      </nav>
+    </aside>
+
+    <main class="dash-main">
+      <header class="dash-header">
         <div>
-          <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+          <h1>Welcome, <span id="userEmail">—</span></h1>
+          <div class="small" id="userMeta">Loading...</div>
         </div>
       </header>
 
-      <div class="grid">
-        <section class="panel">
-          <h3>Welcome</h3>
-          <p class="small">This page requires authentication. If you are not logged in you will be redirected to <a class="link" href="login.html">login</a>.</p>
-
-          <div style="margin-top:12px">
-            <strong>Your session info</strong>
-            <div id="sessionBox" style="margin-top:8px">
-              <pre id="sessionPre">Loading session...</pre>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <strong>Quick links</strong>
-            <div class="list">
-              <a class="link" id="tool1" href="https://tool1.novomind.in" target="_blank">tool1.novomind.in</a>
-              <a class="link" id="tool2" href="https://tool2.novomind.in" target="_blank">tool2.novomind.in</a>
-              <a class="link" id="tool3" href="https://tool3.novomind.in" target="_blank">tool3.novomind.in</a>
-            </div>
-          </div>
-        </section>
-
-        <aside class="panel">
-          <h4>Account</h4>
-          <div id="accountInfo" style="margin-top:8px">
-            <div class="small">Email: <span id="emailSpan">—</span></div>
-            <div class="small" style="margin-top:6px">UID: <span id="uidSpan">—</span></div>
-            <div style="margin-top:12px">
-              <button id="refreshBtn" class="btn btn-ghost">Refresh session</button>
-              <button id="deleteBtn" class="btn danger" style="margin-left:8px">Sign out everywhere</button>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </div>
+      <section class="cards">
+        <div class="card glow">
+          <h3>Active session</h3>
+          <pre id="sessionPre">Loading session...</pre>
+        </div>
+        <div class="card glow">
+          <h3>Quick tools</h3>
+          <ul class="list">
+            <li><a href="https://tool1.novomind.in" target="_blank">Tool 1</a></li>
+            <li><a href="https://tool2.novomind.in" target="_blank">Tool 2</a></li>
+            <li><a href="https://tool3.novomind.in" target="_blank">Tool 3</a></li>
+          </ul>
+        </div>
+      </section>
+    </main>
   </div>
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-  <script>
-    // Replace with your Supabase values
-    const SUPABASE_URL = 'https://vdbjltfyoxmiijuwjlur.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-client.js"></script>
+<script>
+(async function(){
+  // require auth
+  const { data } = await supabaseClient.auth.getSession();
+  const session = data?.session ?? null;
+  if(!session){ location.href = 'login.html'; return; }
+  document.getElementById('userEmail').textContent = session.user.email ?? '—';
+  document.getElementById('userMeta').textContent = `UID: ${session.user.id}`;
+  document.getElementById('sessionPre').textContent = JSON.stringify(session, null, 2);
 
-    // initialize client
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const emailSpan = document.getElementById('emailSpan');
-    const uidSpan = document.getElementById('uidSpan');
-    const sessionPre = document.getElementById('sessionPre');
-    const userMeta = document.getElementById('userMeta');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const deleteBtn = document.getElementById('deleteBtn');
-
-    async function requireAuth() {
-      try {
-        const { data } = await supabase.auth.getSession();
-        const session = data?.session;
-        if (!session) {
-          // not authenticated
-          window.location.href = 'login.html';
-          return;
-        }
-
-        const user = session.user;
-        emailSpan.textContent = user.email || '—';
-        uidSpan.textContent = user.id || '—';
-        userMeta.textContent = `${user.email || 'User'} • logged in`;
-        sessionPre.textContent = JSON.stringify(session, null, 2);
-      } catch (err) {
-        console.error(err);
-        window.location.href = 'login.html';
-      }
-    }
-
-    // Logout but keep session on other devices (simple signOut)
-    logoutBtn.addEventListener('click', async () => {
-      await supabase.auth.signOut();
-      window.location.href = 'login.html';
-    });
-
-    // Sign out from all sessions (revoke)
-    deleteBtn.addEventListener('click', async () => {
-      deleteBtn.disabled = true;
-      deleteBtn.textContent = 'Signing out everywhere...';
-      try {
-        // revoke all refresh tokens for the user - uses admin endpoint normally.
-        // Best-effort: signOut then redirect.
-        await supabase.auth.signOut();
-      } catch(e){ console.error(e); }
-      window.location.href = 'login.html';
-    });
-
-    refreshBtn.addEventListener('click', async () => {
-      refreshBtn.disabled = true;
-      refreshBtn.textContent = 'Refreshing...';
-      try {
-        const { data } = await supabase.auth.getSession();
-        sessionPre.textContent = JSON.stringify(data?.session ?? {}, null, 2);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = 'Refresh session';
-      }
-    });
-
-    // Auto-run auth check on load
-    requireAuth();
-
-    // Optional: listen to auth changes and act
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        // signed out
-        window.location.href = 'login.html';
-      } else {
-        // update display
-        emailSpan.textContent = session.user?.email ?? '—';
-        uidSpan.textContent = session.user?.id ?? '—';
-        sessionPre.textContent = JSON.stringify(session, null, 2);
-      }
-    });
-  </script>
+  document.getElementById('signout').addEventListener('click', async (e)=>{
+    e.preventDefault();
+    await supabaseClient.auth.signOut();
+    location.href = 'login.html';
+  });
+})();
+</script>
 </body>
 </html>
