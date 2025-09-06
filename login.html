@@ -1,122 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NovaMind - Login</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Login — NovaMind</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="auth-container">
-    <div class="logo">
-      <i class="fas fa-brain"></i>
-      <span>NovaMind</span>
-    </div>
-    
-    <div class="auth-form">
-      <h2>Login to NovaMind</h2>
-      
-      <div id="alertBox" class="alert">
-        <span id="alertMessage"></span>
-      </div>
-      
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="login-email">Email</label>
-          <input type="email" id="login-email" placeholder="Enter your email" required>
+  <div class="auth-wrap">
+    <div class="auth-card glow">
+      <img src="assets/logo.png" class="logo" alt="NovaMind">
+      <h2>Login</h2>
+      <div id="alert" class="alert"></div>
+
+      <form id="loginForm" autocomplete="on">
+        <label>Email<input id="li-email" type="email" required></label>
+        <label>Password<input id="li-password" type="password" required></label>
+        <div class="row">
+          <button class="btn primary" type="submit">Login</button>
+          <a href="forgot.html" class="btn ghost">Forgot?</a>
         </div>
-        
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <input type="password" id="login-password" placeholder="Enter your password" required>
-        </div>
-        
-        <div class="form-options">
-          <label>
-            <input type="checkbox" id="remember"> Remember me
-          </label>
-          <a href="#">Forgot password?</a>
-        </div>
-        
-        <button type="submit" class="submit-btn" id="login-submit">Login</button>
+        <p class="small">No account? <a href="signup.html">Sign up</a></p>
       </form>
-      
-      <div class="auth-switch">
-        Don't have an account? <a href="signup.html">Sign up</a>
-      </div>
     </div>
   </div>
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-
-  <script>
-    // =======================
-    // CONFIGURE SUPABASE HERE
-    // =======================
-    const SUPABASE_URL = 'https://vdbjltfyoxmiijuwjlur.supabase.co'; // <-- replace
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';        // <-- replace
-
-    // Initialize Supabase client (note: no supabaseJs, just supabase)
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Handle form submit
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('login-submit');
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
-
-      submitBtn.textContent = 'Logging in...';
-      submitBtn.disabled = true;
-
-      try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) {
-          showAlert(error.message, 'error');
-          submitBtn.textContent = 'Login';
-          submitBtn.disabled = false;
-        } else {
-          showAlert('Login successful! Redirecting...', 'success');
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1500);
-        }
-      } catch (err) {
-        console.error(err);
-        showAlert('Unexpected error. Check console.', 'error');
-        submitBtn.textContent = 'Login';
-        submitBtn.disabled = false;
-      }
-    });
-
-    // Show alert helper
-    function showAlert(message, type) {
-      const alertBox = document.getElementById('alertBox');
-      const alertMessage = document.getElementById('alertMessage');
-      alertMessage.textContent = message;
-      alertBox.className = `alert alert-${type}`;
-      alertBox.style.display = 'block';
-      alertBox.scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Auto redirect if already logged in
-    async function checkAuthStatus() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        window.location.href = 'dashboard.html';
-      }
-    }
-    checkAuthStatus();
-  </script>
-  window.location.href = 'dashboard.html';
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  clearAlert();
+  const email = document.getElementById('li-email').value.trim();
+  const password = document.getElementById('li-password').value;
+  if(!email || !password) return showAlert('Email and password required');
+  const r = await supaSignIn(email,password);
+  if(r.error) showAlert(r.error.message || r.error,'error'); else {
+    showAlert('Login successful','success');
+    setTimeout(()=>location.href='dashboard.html',800);
+  }
+});
+</script>
 </body>
 </html>
-
