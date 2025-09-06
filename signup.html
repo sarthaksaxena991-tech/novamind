@@ -1,108 +1,48 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NovaMind — Sign up</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* Minimal styles — match your login UI */
-    body{font-family:Arial,Helvetica,sans-serif;background:#071028;color:#eef;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
-    .card{width:100%;max-width:420px;padding:28px;border-radius:12px;background:linear-gradient(180deg,#091025,#071022);box-shadow:0 8px 30px rgba(0,0,0,.6)}
-    label{display:block;font-size:13px;color:#9aa4b2;margin-bottom:6px}
-    input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.01);color:inherit;margin-bottom:12px}
-    .btn{background:#6f63ff;color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer}
-    .alert{display:none;padding:10px;border-radius:8px;margin-bottom:12px}
-    .alert.error{background:rgba(239,68,68,0.08);color:#ffd6d6}
-    .alert.success{background:rgba(34,197,94,0.08);color:#bbf7d0}
-    a.link{color:#9fb6ff;text-decoration:none}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sign up — NovaMind</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main class="card">
-    <h2>Create your NovaMind account</h2>
-    <div id="alert" class="alert"></div>
+  <div class="auth-wrap">
+    <div class="auth-card glow">
+      <img src="assets/logo.png" class="logo" alt="NovaMind">
+      <h2>Create account</h2>
+      <div id="alert" class="alert"></div>
 
-    <form id="signupForm" autocomplete="on" novalidate>
-      <label for="email">Email</label>
-      <input id="email" type="email" required placeholder="you@domain.com">
+      <form id="signupForm" autocomplete="on">
+        <label>Email<input id="su-email" type="email" required></label>
+        <label>Password<input id="su-password" type="password" required minlength="8"></label>
+        <label>Confirm Password<input id="su-confirm" type="password" required minlength="8"></label>
+        <div class="row">
+          <button type="submit" class="btn primary">Create account</button>
+          <a href="login.html" class="btn ghost">Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      <label for="password">Password</label>
-      <input id="password" type="password" required placeholder="Choose a password">
-
-      <label for="confirm">Confirm password</label>
-      <input id="confirm" type="password" required placeholder="Repeat password">
-
-      <button id="submit" class="btn" type="submit">Create account</button>
-    </form>
-
-    <p style="margin-top:12px;color:#9aa4b2">Already have an account? <a class="link" href="login.html">Login</a></p>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-  <script>
-    // Replace with your Supabase values
-    const SUPABASE_URL = 'https://vdbjltfyoxmiijuwjlur.supabas.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkYmpsdGZ5b3htaWlqdXdqbHVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5MTA5MDcsImV4cCI6MjA2ODQ4NjkwN30.rSHfuHf2VcpEua__z2GXipSHVs_3gWSayfswIOyNL9E';
-
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const el = {
-      form: document.getElementById('signupForm'),
-      email: document.getElementById('email'),
-      password: document.getElementById('password'),
-      confirm: document.getElementById('confirm'),
-      submit: document.getElementById('submit'),
-      alert: document.getElementById('alert')
-    };
-
-    function show(msg, type='error'){
-      el.alert.textContent = msg;
-      el.alert.className = 'alert ' + (type==='success' ? 'success' : 'error');
-      el.alert.style.display = 'block';
-    }
-
-    el.form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      el.alert.style.display = 'none';
-
-      const email = el.email.value.trim();
-      const pwd = el.password.value;
-      const conf = el.confirm.value;
-
-      if(!email || !pwd){ show('Email and password required.'); return; }
-      if(pwd !== conf){ show('Passwords do not match.'); return; }
-
-      el.submit.disabled = true;
-      el.submit.textContent = 'Creating...';
-
-      try {
-        // signUp uses the v2 API
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password: pwd
-        });
-
-        if (error) {
-          show(error.message || 'Signup failed.');
-          el.submit.disabled = false;
-          el.submit.textContent = 'Create account';
-          return;
-        }
-
-        // If you have email confirmations enabled, tell user to check mailbox
-        show('Signup successful. Check your email to confirm your account.', 'success');
-        setTimeout(()=> window.location.href = 'login.html', 1800);
-      } catch(err){
-        console.error(err);
-        show('Unexpected error. See console.');
-        el.submit.disabled = false;
-        el.submit.textContent = 'Create account';
-      }
-    });
-  </script>
-  window.location.href = 'dashboard.html';
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.getElementById('signupForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  clearAlert();
+  const email = document.getElementById('su-email').value.trim();
+  const pwd = document.getElementById('su-password').value;
+  const conf = document.getElementById('su-confirm').value;
+  if(!email || !pwd) return showAlert('Email and password required');
+  if(pwd !== conf) return showAlert('Passwords do not match');
+  const r = await supaSignUp(email,pwd);
+  if(r.error) showAlert(r.error.message || r.error, 'error'); else {
+    showAlert('Signup OK. Check your email if verification enabled. Redirecting...', 'success');
+    setTimeout(()=>location.href='dashboard.html',1400);
+  }
+});
+</script>
 </body>
 </html>
-
