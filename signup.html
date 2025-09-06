@@ -40,6 +40,17 @@
   <script src="js/auth.js"></script>
 
   <script>
+  <button id="googleBtn" class="btn ghost">Sign in with Google</button>
+
+<script>
+document.getElementById('googleBtn').addEventListener('click', async () => {
+  await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + '/dashboard.html' }
+  });
+});
+</script>
+
     // Wait until shared auth helpers are loaded
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('signupForm');
@@ -73,3 +84,4 @@
   </script>
 </body>
 </html>
+
