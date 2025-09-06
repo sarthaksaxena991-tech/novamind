@@ -1,27 +1,31 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Sign up — NovaMind</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign up — NovaMind</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/auth.js"></script>
-<!-- then any inline page-specific script -->
-
 <body>
   <div class="auth-wrap">
     <div class="auth-card glow">
       <img src="assets/logo.png" class="logo" alt="NovaMind">
       <h2>Create account</h2>
-      <div id="alert" class="alert"></div>
+      <div id="alert" class="alert" style="display:none"></div>
 
-      <form id="signupForm" autocomplete="on">
-        <label>Email<input id="su-email" type="email" required></label>
-        <label>Password<input id="su-password" type="password" required minlength="8"></label>
-        <label>Confirm Password<input id="su-confirm" type="password" required minlength="8"></label>
+      <form id="signupForm" autocomplete="on" novalidate>
+        <label>Email
+          <input id="su-email" type="email" required autocomplete="email">
+        </label>
+
+        <label>Password
+          <input id="su-password" type="password" required minlength="8" autocomplete="new-password">
+        </label>
+
+        <label>Confirm Password
+          <input id="su-confirm" type="password" required minlength="8" autocomplete="new-password">
+        </label>
+
         <div class="row">
           <button type="submit" class="btn primary">Create account</button>
           <a href="login.html" class="btn ghost">Login</a>
@@ -30,25 +34,42 @@
     </div>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/auth.js"></script>
-<script>
-document.getElementById('signupForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  clearAlert();
-  const email = document.getElementById('su-email').value.trim();
-  const pwd = document.getElementById('su-password').value;
-  const conf = document.getElementById('su-confirm').value;
-  if(!email || !pwd) return showAlert('Email and password required');
-  if(pwd !== conf) return showAlert('Passwords do not match');
-  const r = await supaSignUp(email,pwd);
-  if(r.error) showAlert(r.error.message || r.error, 'error'); else {
-    showAlert('Signup OK. Check your email if verification enabled. Redirecting...', 'success');
-    setTimeout(()=>location.href='dashboard.html',1400);
-  }
-});
-</script>
+  <!-- load scripts in this exact order -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    // Wait until shared auth helpers are loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('signupForm');
+      if (!form) return console.warn('signupForm missing');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        clearAlert();
+
+        const email = (document.getElementById('su-email') || {}).value?.trim() || '';
+        const pwd = (document.getElementById('su-password') || {}).value || '';
+        const conf = (document.getElementById('su-confirm') || {}).value || '';
+
+        if (!email || !pwd) return showAlert('Email and password required');
+        if (pwd !== conf) return showAlert('Passwords do not match');
+
+        try {
+          const res = await supaSignUp(email, pwd);
+          if (res?.error) {
+            showAlert(res.error?.message || res.error, 'error');
+            return;
+          }
+          showAlert('Signup OK. Check your email if verification is enabled. Redirecting...', 'success');
+          setTimeout(() => location.href = 'dashboard.html', 1200);
+        } catch (err) {
+          console.error(err);
+          showAlert('Unexpected error. Check console.', 'error');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
-
