@@ -9,5 +9,21 @@
       <a href="login.html" class="btn primary">Back to login</a>
     </div>
   </div>
+  <script>
+// if there is a fragment like #access_token=...&expires_in=...
+const hash = window.location.hash.slice(1); // remove '#'
+if(hash){
+  const params = new URLSearchParams(hash);
+  const accessToken = params.get('access_token') || params.get('token');
+  if(accessToken){
+    // redirect to reset page with token in query
+    window.location.href = `/reset-password.html?token=${encodeURIComponent(accessToken)}`;
+  } else {
+    // show error
+    document.body.innerText = 'Missing token';
+  }
+}
+</script>
+
 </body>
 </html>
