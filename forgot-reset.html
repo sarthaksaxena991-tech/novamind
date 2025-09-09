@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Forgot / Reset Password</title>
+  <style>
+    body { font-family: system-ui, sans-serif; display:flex; height:100vh; align-items:center; justify-content:center; background:#f5f7fa; margin:0 }
+    .card { width:360px; background:#fff; padding:20px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.06) }
+    h1 { font-size:18px; margin:0 0 12px }
+    label { display:block; margin:8px 0 4px; font-size:13px }
+    input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:14px }
+    button { margin-top:14px; width:100%; padding:10px; border:0; border-radius:8px; background:#0b69ff; color:#fff; font-weight:600; cursor:pointer }
+    .msg { margin-top:12px; padding:10px; border-radius:6px; font-size:13px; display:none }
+    .msg.error { background:#ffecec; color:#b00020 }
+    .msg.info { background:#eef6ff; color:#083d77 }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Forgot / Reset Password</h1>
+
+    <div id="step1">
+      <label>Email</label>
+      <input id="email" type="email"/>
+      <button id="sendOtp">Send OTP</button>
+    </div>
+
+    <div id="step2" style="display:none">
+      <label>OTP</label>
+      <input id="otp" type="text"/>
+      <label>New password</label>
+      <input id="pw" type="password"/>
+      <label>Confirm password</label>
+      <input id="pw2" type="password"/>
+      <button id="resetBtn">Reset Password</button>
+    </div>
+
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    const emailEl = document.getElementById('email');
+    const otpEl = document.getElementById('otp');
+    const pwEl = document.getElementById('pw');
+    const pw2El = document.getElementById('pw2');
+    const sendOtpBtn = document.getElementById('sendOtp');
+    const resetBtn = document.getElementById('resetBtn');
+    const msg = document.getElementById('msg');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+
+    function showMsg(text, type='info') {
+      msg.textContent = text;
+      msg.className = 'msg ' + type;
+      msg.style.display = 'block';
+    }
+
+    sendOtpBtn.onclick = async () => {
+      const email = emailEl.value.trim();
+      if(!email) return showMsg('Enter email','error');
+      showMsg('Sending OTP...','info');
+      try {
+        const res = await fetch('/auth/forgot', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ email })
+        });
+        if(res.ok){
+          showMsg('OTP sent to your email.','info');
+          step1.style.display = 'none';
+          step2.style.display = 'block';
+        } else {
+          const err = await res.json().catch(()=>({error:'Failed'}));
+          showMsg(err.error || 'Error','error');
+        }
+      } catch(e){ showMsg('Network error','error'); }
+    };
+
+    resetBtn.onclick = async () => {
+      const email = emailEl.value.trim();
+      const otp = otpEl.value.trim();
+      const pw = pwEl.value.trim();
+      const pw2 = pw2El.value.trim();
+      if(pw.length<8) return showMsg('Password must be 8+ chars','error');
+      if(pw!==pw2) return showMsg('Passwords do not match','error');
+      showMsg('Resetting...','info');
+      try {
+        const res = await fetch('/auth/reset', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ email, otp, password:pw })
+        });
+        if(res.ok){
+          showMsg('Password reset successful. Now login.','info');
+        } else {
+          const err = await res.json().catch(()=>({error:'Failed'}));
+          showMsg(err.error || 'Error','error');
+        }
+      } catch(e){ showMsg('Network error','error'); }
+    };
+  </script>
+</body>
+</html>
