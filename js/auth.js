@@ -35,13 +35,8 @@ window.supaSignOut = async function() {
   try { return await window.supabaseClient.auth.signOut(); }
   catch (e) { return { error: e }; }
 };
-window.supaResetPassword = async function(email) {
-  try {
-    return await window.supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset-success.html'
-    });
-  } catch (e) { return { error: e }; }
-};
+
+
 
 // Auto-attach listeners for login/forgot if those forms exist (optional)
 document.addEventListener('DOMContentLoaded', () => {
@@ -70,3 +65,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
