@@ -5,29 +5,31 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Forgot / Reset Password</title>
   <style>
-    body{font-family:sans-serif;display:flex;height:100vh;align-items:center;justify-content:center;background:#f5f7fa;margin:0}
-    .card{width:340px;background:#fff;padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
-    h1{margin:0 0 12px;font-size:20px;text-align:center}
+    body{font-family:sans-serif;display:flex;height:100vh;align-items:center;justify-content:center;background:#0d1117;margin:0}
+    .card{width:340px;background:#161b22;padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.5);color:#fff}
+    h1{text-align:center;margin:0 0 12px;font-size:20px}
     label{display:block;margin:8px 0 4px;font-size:14px}
-    input{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;font-size:14px}
+    input{width:100%;padding:10px;border:1px solid #444;border-radius:6px;font-size:14px;background:#0d1117;color:#fff}
     button{margin-top:14px;width:100%;padding:10px;border:0;border-radius:8px;background:#0b69ff;color:#fff;font-weight:600;cursor:pointer}
     .msg{margin-top:12px;padding:10px;border-radius:6px;font-size:13px;display:none}
     .msg.error{background:#ffecec;color:#b00020}
     .msg.info{background:#eef6ff;color:#083d77}
+    img.logo{display:block;margin:0 auto 10px;max-width:80px}
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Forgot Password</h1>
+    <img src="assets/logo.png" class="logo" alt="NovaMind"/>
+    <h1>Reset Password</h1>
 
-    <!-- Step 1: Email -->
+    <!-- Step 1 -->
     <div id="step1">
       <label>Email</label>
       <input id="email" type="email" placeholder="Enter your email"/>
       <button id="sendOtp">Send OTP</button>
     </div>
 
-    <!-- Step 2: OTP + new password -->
+    <!-- Step 2 -->
     <div id="step2" style="display:none">
       <label>OTP</label>
       <input id="otp" type="text" placeholder="Enter OTP"/>
@@ -42,65 +44,64 @@
   </div>
 
   <script>
-    const emailEl = document.getElementById('email');
-    const otpEl = document.getElementById('otp');
-    const pwEl = document.getElementById('pw');
-    const pw2El = document.getElementById('pw2');
-    const sendOtpBtn = document.getElementById('sendOtp');
-    const resetBtn = document.getElementById('resetBtn');
-    const msg = document.getElementById('msg');
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
+    const emailEl=document.getElementById('email');
+    const otpEl=document.getElementById('otp');
+    const pwEl=document.getElementById('pw');
+    const pw2El=document.getElementById('pw2');
+    const sendOtpBtn=document.getElementById('sendOtp');
+    const resetBtn=document.getElementById('resetBtn');
+    const msg=document.getElementById('msg');
+    const step1=document.getElementById('step1');
+    const step2=document.getElementById('step2');
 
-    function showMsg(text, type='info'){
-      msg.textContent = text;
-      msg.className = 'msg ' + type;
-      msg.style.display = 'block';
+    function showMsg(t,type='info'){
+      msg.textContent=t;
+      msg.className='msg '+type;
+      msg.style.display='block';
     }
 
-    sendOtpBtn.onclick = async () => {
-      const email = emailEl.value.trim();
+    sendOtpBtn.onclick=async()=>{
+      const email=emailEl.value.trim();
       if(!email) return showMsg('Enter email','error');
       showMsg('Sending OTP...','info');
-      try {
-        const res = await fetch('/auth/forgot',{
+      try{
+        const res=await fetch('/auth/forgot',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({ email })
+          body:JSON.stringify({email})
         });
         if(res.ok){
-          showMsg('OTP sent to your email (check console in demo).','info');
-          step1.style.display='none';
-          step2.style.display='block';
+          showMsg('OTP sent (check email/console in demo).','info');
+          step1.style.display='none'; step2.style.display='block';
         }else{
-          const err = await res.json().catch(()=>({error:'Error'}));
-          showMsg(err.error || 'Error','error');
+          const err=await res.json().catch(()=>({error:'Error'}));
+          showMsg(err.error,'error');
         }
-      }catch(e){ showMsg('Network error','error'); }
+      }catch(e){showMsg('Network error','error');}
     };
 
-    resetBtn.onclick = async () => {
-      const email = emailEl.value.trim();
-      const otp = otpEl.value.trim();
-      const pw = pwEl.value.trim();
-      const pw2 = pw2El.value.trim();
-      if(pw.length<8) return showMsg('Password must be at least 8 chars','error');
+    resetBtn.onclick=async()=>{
+      const email=emailEl.value.trim();
+      const otp=otpEl.value.trim();
+      const pw=pwEl.value.trim();
+      const pw2=pw2El.value.trim();
+      if(pw.length<8) return showMsg('Password must be 8+ chars','error');
       if(pw!==pw2) return showMsg('Passwords do not match','error');
       showMsg('Resetting...','info');
-      try {
-        const res = await fetch('/auth/reset',{
+      try{
+        const res=await fetch('/auth/reset',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({ email, otp, password:pw })
+          body:JSON.stringify({email,otp,password:pw})
         });
         if(res.ok){
-          showMsg('Password reset successful. Now login.','info');
+          showMsg('Password reset successful. Redirecting...','info');
           setTimeout(()=>window.location.href='login.html',1500);
         }else{
-          const err = await res.json().catch(()=>({error:'Error'}));
-          showMsg(err.error || 'Error','error');
+          const err=await res.json().catch(()=>({error:'Error'}));
+          showMsg(err.error,'error');
         }
-      }catch(e){ showMsg('Network error','error'); }
+      }catch(e){showMsg('Network error','error');}
     };
   </script>
 </body>
