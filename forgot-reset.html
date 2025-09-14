@@ -44,10 +44,7 @@
   </div>
 
   <script>
-    // Set API_BASE appropriately. Use localhost for local dev
-const API = 'https://otp-backend-umvx.onrender.com';
-await fetch(`${API}/api/forgot`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
-
+    const API = "https://otp-backend-umvx.onrender.com"; // 🔥 deployed backend URL
 
     const emailEl=document.getElementById('email');
     const otpEl=document.getElementById('otp');
@@ -64,66 +61,57 @@ await fetch(`${API}/api/forgot`, { method:'POST', headers:{'Content-Type':'appli
       msg.className='msg '+type;
       msg.style.display='block';
     }
-    function clearMsg(){
-      msg.style.display='none';
-      msg.textContent='';
-      msg.className='msg';
-    }
 
     sendOtpBtn.onclick = async () => {
-      clearMsg();
       const email = emailEl.value.trim();
       if (!email) return showMsg('Enter email', 'error');
       showMsg('Sending OTP...', 'info');
       try {
-        const res = await fetch(`${API_BASE}/api/forgot`, {
+        const res = await fetch(`${API}/api/forgot`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         });
-        const json = await res.json().catch(()=>({}));
-        if (!res.ok) {
-          const err = json && (json.error || json.message) ? (json.error || json.message) : 'Failed to send OTP';
-          return showMsg(err, 'error');
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          showMsg('OTP sent (check your email).', 'info');
+          step1.style.display = 'none';
+          step2.style.display = 'block';
+        } else {
+          showMsg(data.error || 'Failed to send OTP', 'error');
         }
-        showMsg('OTP sent. Check your email.', 'info');
-        step1.style.display = 'none';
-        step2.style.display = 'block';
       } catch (e) {
-        console.error(e);
-        showMsg('Network error', 'error');
+        console.error("Send OTP error:", e);
+        showMsg('Network error (see console).', 'error');
       }
     };
 
     resetBtn.onclick = async () => {
-      clearMsg();
-      const email = emailEl.value.trim();
-      const otp = otpEl.value.trim();
-      const pw = pwEl.value.trim();
-      const pw2 = pw2El.value.trim();
-      if (!email || !otp || !pw || !pw2) return showMsg('Fill all fields', 'error');
-      if (pw.length < 8) return showMsg('Password must be 8+ chars', 'error');
-      if (pw !== pw2) return showMsg('Passwords do not match', 'error');
-      showMsg('Resetting...', 'info');
-      try {
-        const res = await fetch(`${API_BASE}/api/reset`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, otp, newPassword: pw })
+      const email=emailEl.value.trim();
+      const otp=otpEl.value.trim();
+      const pw=pwEl.value.trim();
+      const pw2=pw2El.value.trim();
+      if(pw.length<8) return showMsg('Password must be 8+ chars','error');
+      if(pw!==pw2) return showMsg('Passwords do not match','error');
+      showMsg('Resetting...','info');
+      try{
+        const res=await fetch(`${API}/api/reset`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email,otp,password:pw})
         });
-        const json = await res.json().catch(()=>({}));
-        if (!res.ok) {
-          const err = json && (json.error || json.message) ? (json.error || json.message) : 'Failed to reset password';
-          return showMsg(err, 'error');
+        const data = await res.json().catch(() => ({}));
+        if(res.ok){
+          showMsg('Password reset successful. Redirecting...','info');
+          setTimeout(()=>window.location.href='login.html',1500);
+        }else{
+          showMsg(data.error || 'Failed to reset password','error');
         }
-        showMsg('Password reset successful. Redirecting...', 'info');
-        setTimeout(()=>window.location.href='login.html',1500);
-      } catch (e) {
-        console.error(e);
-        showMsg('Network error', 'error');
+      }catch(e){
+        console.error("Reset error:", e);
+        showMsg('Network error (see console)','error');
       }
     };
   </script>
 </body>
 </html>
-
