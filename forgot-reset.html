@@ -44,6 +44,11 @@
   </div>
 
   <script>
+    // Set API_BASE appropriately. Use localhost for local dev.
+    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:3000'
+      : 'https://YOUR_BACKEND_URL_HERE'; // replace after deploy
+
     const emailEl=document.getElementById('email');
     const otpEl=document.getElementById('otp');
     const pwEl=document.getElementById('pw');
@@ -59,80 +64,66 @@
       msg.className='msg '+type;
       msg.style.display='block';
     }
-
-sendOtpBtn.onclick = async () => {
-  const email = emailEl.value.trim();
-  if (!email) return showMsg('Enter email', 'error');
-  showMsg('Sending OTP...', 'info');
-  try {
-    const res = await fetch('http://localhost:3000/auth/forgot', {   // 🔥 updated
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-    if (res.ok) {
-      showMsg('OTP sent (check email/console in demo).', 'info');
-      step1.style.display = 'none';
-      step2.style.display = 'block';
-    } else {
-      const err = await res.json().catch(() => ({ error: 'Error' }));
-      showMsg(err.error, 'error');
+    function clearMsg(){
+      msg.style.display='none';
+      msg.textContent='';
+      msg.className='msg';
     }
-  } catch (e) {
-    showMsg('Network error', 'error');
-  }
-};
 
-resetBtn.onclick = async () => {
-  const email = emailEl.value.trim();
-  const otp = otpEl.value.trim();
-  const pw = pwEl.value.trim();
-  const pw2 = pw2El.value.trim();
-  if (pw.length < 8) return showMsg('Password must be 8+ chars', 'error');
-  if (pw !== pw2) return showMsg('Passwords do not match', 'error');
-  showMsg('Resetting...', 'info');
-  try {
-    const res = await fetch('http://localhost:3000/auth/reset', {   // 🔥 updated
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp, password: pw })
-    });
-    if (res.ok) {
-      showMsg('Password reset successful. Redirecting...', 'info');
-      setTimeout(() => window.location.href = 'login.html', 1500);
-    } else {
-      const err = await res.json().catch(() => ({ error: 'Error' }));
-      showMsg(err.error, 'error');
-    }
-  } catch (e) {
-    showMsg('Network error', 'error');
-  }
-};
-
-
-    resetBtn.onclick=async()=>{
-      const email=emailEl.value.trim();
-      const otp=otpEl.value.trim();
-      const pw=pwEl.value.trim();
-      const pw2=pw2El.value.trim();
-      if(pw.length<8) return showMsg('Password must be 8+ chars','error');
-      if(pw!==pw2) return showMsg('Passwords do not match','error');
-      showMsg('Resetting...','info');
-      try{
-        const res=await fetch('/auth/reset',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({email,otp,password:pw})
+    sendOtpBtn.onclick = async () => {
+      clearMsg();
+      const email = emailEl.value.trim();
+      if (!email) return showMsg('Enter email', 'error');
+      showMsg('Sending OTP...', 'info');
+      try {
+        const res = await fetch(`${API_BASE}/api/forgot`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
         });
-        if(res.ok){
-          showMsg('Password reset successful. Redirecting...','info');
-          setTimeout(()=>window.location.href='login.html',1500);
-        }else{
-          const err=await res.json().catch(()=>({error:'Error'}));
-          showMsg(err.error,'error');
+        const json = await res.json().catch(()=>({}));
+        if (!res.ok) {
+          const err = json && (json.error || json.message) ? (json.error || json.message) : 'Failed to send OTP';
+          return showMsg(err, 'error');
         }
-      }catch(e){showMsg('Network error','error');}
+        showMsg('OTP sent. Check your email.', 'info');
+        step1.style.display = 'none';
+        step2.style.display = 'block';
+      } catch (e) {
+        console.error(e);
+        showMsg('Network error', 'error');
+      }
+    };
+
+    resetBtn.onclick = async () => {
+      clearMsg();
+      const email = emailEl.value.trim();
+      const otp = otpEl.value.trim();
+      const pw = pwEl.value.trim();
+      const pw2 = pw2El.value.trim();
+      if (!email || !otp || !pw || !pw2) return showMsg('Fill all fields', 'error');
+      if (pw.length < 8) return showMsg('Password must be 8+ chars', 'error');
+      if (pw !== pw2) return showMsg('Passwords do not match', 'error');
+      showMsg('Resetting...', 'info');
+      try {
+        const res = await fetch(`${API_BASE}/api/reset`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp, newPassword: pw })
+        });
+        const json = await res.json().catch(()=>({}));
+        if (!res.ok) {
+          const err = json && (json.error || json.message) ? (json.error || json.message) : 'Failed to reset password';
+          return showMsg(err, 'error');
+        }
+        showMsg('Password reset successful. Redirecting...', 'info');
+        setTimeout(()=>window.location.href='login.html',1500);
+      } catch (e) {
+        console.error(e);
+        showMsg('Network error', 'error');
+      }
     };
   </script>
 </body>
 </html>
+
