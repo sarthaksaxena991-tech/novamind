@@ -44,9 +44,10 @@
   </div>
 
   <script>
-    // Set API_BASE appropriately. Use localhost for local dev.
-   const API_BASE = 'https://otp-backend-umvx.onrender.com';
-  await fetch(`${API_BASE}/api/forgot`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+    // Set API_BASE appropriately. Use localhost for local dev
+const API = 'https://otp-backend-umvx.onrender.com';
+await fetch(`${API}/api/forgot`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+
 
     const emailEl=document.getElementById('email');
     const otpEl=document.getElementById('otp');
