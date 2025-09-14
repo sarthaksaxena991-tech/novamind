@@ -1,29 +1,78 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Reset — NovaMind</title><link rel="stylesheet" href="css/style.css"></head>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Forgot — NovaMind</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
   <div class="auth-wrap">
     <div class="auth-card glow">
-      <img src="assets/logo.png" class="logo" alt="NovaMind"><h3>Reset password</h3>
-      <div id="alert" class="alert"></div>
-      <label>Email<input id="fp-email" type="email" required></label>
+      <img src="assets/logo.png" class="logo" alt="NovaMind">
+      <h3>Send OTP</h3>
+
+      <div id="alert" class="alert" style="display:none;"></div>
+
+      <label>Email
+        <input id="fp-email" type="email" required>
+      </label>
+
       <div class="row">
-        <button id="sendReset" class="btn primary">Send reset email</button>
+        <button id="sendReset" class="btn primary">Send OTP</button>
         <a href="login.html" class="btn ghost">Back</a>
       </div>
     </div>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/auth.js"></script>
 <script>
-document.getElementById('sendReset').addEventListener('click', async ()=>{
+/*
+  Frontend forgot page: calls backend /api/forgot
+  - Change API_BASE to your deployed backend URL in production.
+*/
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000'
+  : 'https://YOUR_BACKEND_URL_HERE'; // <-- replace after deploy
+
+function showAlert(msg, type = 'error') {
+  const el = document.getElementById('alert');
+  el.style.display = 'block';
+  el.textContent = msg;
+  el.className = 'alert ' + (type === 'success' ? 'alert-success' : 'alert-error');
+}
+function clearAlert() {
+  const el = document.getElementById('alert');
+  el.style.display = 'none';
+  el.textContent = '';
+  el.className = 'alert';
+}
+
+document.getElementById('sendReset').addEventListener('click', async () => {
   clearAlert();
   const email = document.getElementById('fp-email').value.trim();
-  if(!email) return showAlert('Enter email');
-  const r = await supaResetPassword(email);
-  if(r.error) showAlert(r.error.message || r.error,'error'); else showAlert('Reset email sent. Check inbox','success');
+  if (!email) return showAlert('Enter email');
+
+  try {
+    const res = await fetch(`${API_BASE}/api/forgot`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      // server returned an error object
+      const msg = json && (json.error || json.message) ? (json.error || json.message) : 'Failed to send OTP';
+      return showAlert(msg);
+    }
+    showAlert(json.message || 'OTP sent. Check your inbox', 'success');
+
+    // Optionally navigate user to a reset page where they can input OTP & new password
+    // setTimeout(() => location.href = 'forgot-reset.html', 1500);
+
+  } catch (err) {
+    console.error('Network error', err);
+    showAlert('Network error. Try again later.');
+  }
 });
 </script>
 </body>
