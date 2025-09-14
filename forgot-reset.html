@@ -30,18 +30,23 @@
     </div>
 
     <!-- Step 2 -->
-    <div id="step2" style="display:none">
-      <label>OTP</label>
-      <input id="otp" type="text" placeholder="Enter OTP"/>
-      <label>New password</label>
-      <input id="pw" type="password" placeholder="Enter new password"/>
-      <label>Confirm password</label>
-      <input id="pw2" type="password" placeholder="Confirm password"/>
-      <button id="resetBtn">Reset Password</button>
-    </div>
+  <!-- Step 2 -->
+<div id="step2" style="display:none">
+  <label>Email</label>
+  <input id="email2" type="email" placeholder="Enter your email again"/>
+  
+  <label>OTP</label>
+  <input id="otp" type="text" placeholder="Enter OTP"/>
+  
+  <label>New password</label>
+  <input id="pw" type="password" placeholder="Enter new password"/>
+  
+  <label>Confirm password</label>
+  <input id="pw2" type="password" placeholder="Confirm password"/>
+  
+  <button id="resetBtn">Reset Password</button>
+</div>
 
-    <div id="msg" class="msg"></div>
-  </div>
 
   <script>
     const API = "https://otp-backend-umvx.onrender.com"; // 🔥 deployed backend URL
