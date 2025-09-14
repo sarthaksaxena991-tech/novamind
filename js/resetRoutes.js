@@ -1,6 +1,6 @@
 // js/resetRoutes.js
-// Adjust API_BASE if your backend URL changes
-const API_BASE = "https://otp-backend-umvx.onrender.com";
+// Backend API base URL
+const API_BASE = "https://otp-backend-umvx.onrender.com/api";
 
 const emailEl = document.getElementById("email");
 const otpEl = document.getElementById("otp");
@@ -19,26 +19,26 @@ function showMsg(t, type = "info") {
   msg.style.display = "block";
 }
 
-// Send OTP (calls POST /auth/forgot with { email })
+// STEP 1: Send OTP
 if (sendOtpBtn) {
   sendOtpBtn.addEventListener("click", async () => {
-    const email = (emailEl && emailEl.value || "").trim();
+    const email = (emailEl?.value || "").trim();
     if (!email) return showMsg("Enter email", "error");
 
     showMsg("Sending OTP...", "info");
     try {
-      const res = await fetch(`${API_BASE}/auth/forgot`, {
+      const res = await fetch(`${API_BASE}/forgot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })
       });
 
-      if (res.ok) {
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.ok) {
         showMsg("OTP sent (check email).", "info");
         if (step1) step1.style.display = "none";
         if (step2) step2.style.display = "block";
       } else {
-        const body = await res.json().catch(() => ({ error: "Error" }));
         showMsg(body.error || body.message || "Failed to send OTP", "error");
       }
     } catch (err) {
@@ -48,31 +48,31 @@ if (sendOtpBtn) {
   });
 }
 
-// Reset password (calls POST /auth/reset with { email, otp, password })
+// STEP 2: Reset password
 if (resetBtn) {
   resetBtn.addEventListener("click", async () => {
-    const email = (emailEl && emailEl.value || "").trim();
-    const otp = (otpEl && otpEl.value || "").trim();
-    const pw = (pwEl && pwEl.value || "").trim();
-    const pw2 = (pw2El && pw2El.value || "").trim();
+    const email = (emailEl?.value || "").trim();
+    const otp = (otpEl?.value || "").trim();
+    const pw = (pwEl?.value || "").trim();
+    const pw2 = (pw2El?.value || "").trim();
 
-    if (!email || !otp || !pw) return showMsg("email, otp, password required", "error");
+    if (!email || !otp || !pw) return showMsg("Email, OTP, password required", "error");
     if (pw.length < 8) return showMsg("Password must be 8+ chars", "error");
     if (pw !== pw2) return showMsg("Passwords do not match", "error");
 
     showMsg("Resetting...", "info");
     try {
-      const res = await fetch(`${API_BASE}/auth/reset`, {
+      const res = await fetch(`${API_BASE}/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, password: pw })
       });
 
-      if (res.ok) {
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.ok) {
         showMsg("Password reset successful. Redirecting...", "info");
-        setTimeout(() => window.location.href = "login.html", 1500);
+        setTimeout(() => (window.location.href = "login.html"), 1500);
       } else {
-        const body = await res.json().catch(() => ({ error: "Error" }));
         showMsg(body.error || body.message || `Failed (${res.status})`, "error");
       }
     } catch (err) {
