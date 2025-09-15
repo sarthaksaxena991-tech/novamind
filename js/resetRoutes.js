@@ -1,3 +1,5 @@
+console.log("✅ resetRoutes.js loaded");
+
 // js/resetRoutes.js
 // Backend API base URL
 const API_BASE = "https://otp-backend-umvx.onrender.com/api";
