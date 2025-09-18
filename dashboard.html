@@ -1,118 +1,190 @@
 <!doctype html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Dashboard — NovaMind</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    #sessionPre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
-      background: #0b1220;
-      color: #d6e6f3;
-      padding: 16px;
-      border-radius: 8px;
-      max-height: 70vh;
-      overflow: auto;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-    .profile p { margin: 4px 0; }
+    body{background:#071226;color:#dbe6f3;font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .dash-wrap{display:flex;min-height:100vh}
+    .sidebar{width:220px;background:#071827;padding:24px;color:#9fb2c8}
+    .brand{width:56px;margin-bottom:18px}
+    .menu a{display:block;color:inherit;margin:10px 0;text-decoration:none}
+    .dash-main{flex:1;padding:20px}
+    .dash-header h1{font-size:28px;margin:0}
+    .cards{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+    .card{background:#071826;border-radius:10px;padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    .tools-list{list-style:none;padding:0;margin:0}
+    .tools-list li{display:flex;align-items:center;justify-content:space-between;padding:10px 8px;border-bottom:1px solid rgba(255,255,255,0.02)}
+    .badge{padding:6px 10px;border-radius:999px;font-size:12px}
+    .up{background:#0b6b2b;color:#dff6e6}
+    .down{background:#6b1111;color:#ffe6e6}
+    .unknown{background:#444;color:#fff}
+    .small{font-size:12px;color:#9fb2c8}
+    .spinner{width:14px;height:14px;border:2px solid #fff;border-radius:50%;border-right-color:transparent;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
-
 <body>
   <div class="dash-wrap">
-    <aside class="sidebar glow">
-      <img src="assets/logo.png" class="brand" alt="NovaMind logo">
+    <aside class="sidebar">
+      <img src="assets/logo.png" class="brand" alt="logo">
       <nav class="menu">
         <a href="#" class="active">Overview</a>
         <a href="plans.html">Tools</a>
         <a href="settings.html">Settings</a>
         <a id="signout" href="#">Sign out</a>
       </nav>
+      <div class="small" style="margin-top:22px">UID: <span id="uidSmall">—</span></div>
     </aside>
 
     <main class="dash-main">
       <header class="dash-header">
         <div>
           <h1>Welcome, <span id="userEmail">—</span></h1>
-          <div class="small" id="userMeta">Loading...</div>
+          <div class="small" id="userMeta">Loading profile...</div>
         </div>
       </header>
 
       <section class="cards">
-        <div class="card glow">
-          <h3>Profile</h3>
-          <div class="profile">
-            <img id="avatar" src="assets/default-avatar.png" alt="avatar" style="width:64px;height:64px;border-radius:50%;margin-bottom:10px;">
-            <p><strong>Name:</strong> <span id="fullName">—</span></p>
-            <p><strong>Email:</strong> <span id="userEmail2">—</span></p>
-            <p><strong>UID:</strong> <span id="uid">—</span></p>
-            <p><strong>Provider(s):</strong> <span id="providers">—</span></p>
-            <p><strong>Last sign in:</strong> <span id="lastLogin">—</span></p>
-          </div>
-        </div>
-
-        <div class="card glow">
-          <h3>Active session (safe dump)</h3>
-          <pre id="sessionPre">Loading session...</pre>
-        </div>
-
-        <div class="card glow">
-          <h3>Quick tools</h3>
-          <ul class="list">
-            <li><a href="https://tool1.novomind.in" target="_blank">Tool 1</a></li>
-            <li><a href="https://tool2.novomind.in" target="_blank">Tool 2</a></li>
-            <li><a href="https://tool3.novomind.in" target="_blank">Tool 3</a></li>
+        <!-- Tools column (main) -->
+        <div class="card">
+          <h3>Available tools</h3>
+          <p class="small">Status shows whether the tool endpoint responded. CORS may affect checks for external hosts.</p>
+          <ul id="tools" class="tools-list">
+            <!-- injected -->
           </ul>
+        </div>
+
+        <!-- Optional: profile small card -->
+        <div class="card">
+          <h3>Profile</h3>
+          <div style="display:flex;gap:12px;align-items:center">
+            <img id="avatar" src="assets/default-avatar.png" alt="avatar" style="width:56px;height:56px;border-radius:50%">
+            <div>
+              <div id="fullName"><strong>—</strong></div>
+              <div class="small" id="emailSmall">—</div>
+              <div class="small" id="providersSmall">—</div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
   <script>
-    function sanitizeSession(session){
-      const s = {
-        expires_in: session.expires_in,
-        expires_at: session.expires_at,
-        token_type: session.token_type,
-        user: session.user
-      };
-      return s;
+    // list of tools to show and check
+    const TOOLS = [
+      { id: 'tool1', name: 'Tool 1', url: 'https://tool1.novomind.in' },
+      { id: 'tool2', name: 'Tool 2', url: 'https://tool2.novomind.in' },
+      { id: 'tool3', name: 'Tool 3', url: 'https://tool3.novomind.in' }
+    ];
+
+    // create li DOM
+    function makeToolRow(tool){
+      const li = document.createElement('li');
+      li.id = 'row-' + tool.id;
+      const left = document.createElement('div');
+      left.innerHTML = `<strong>${tool.name}</strong><div class="small">${tool.url}</div>`;
+      const right = document.createElement('div');
+      right.innerHTML = `<span class="spinner" id="spin-${tool.id}"></span><span id="status-${tool.id}" class="badge unknown">checking</span>`;
+      li.appendChild(left);
+      li.appendChild(right);
+      return li;
     }
 
-    (async function(){
-      const { data } = await supabaseClient.auth.getSession();
-      const session = data?.session ?? null;
-      if(!session){ location.href = 'login.html'; return; }
+    // try HEAD fetch first. fallback to GET no-cors. final fallback ping via Image.
+    async function checkTool(tool){
+      const statusEl = document.getElementById('status-' + tool.id);
+      const spin = document.getElementById('spin-' + tool.id);
+      try {
+        // attempt HEAD (may be blocked by CORS)
+        const head = await fetch(tool.url, { method: 'HEAD', mode: 'cors', cache: 'no-store' });
+        if(head && (head.ok || head.status < 400)){
+          statusEl.textContent = 'up';
+          statusEl.className = 'badge up';
+          spin.style.display = 'none';
+          return;
+        }
+      } catch(e){
+        // ignored, try next
+      }
 
-      const user = session.user;
+      try {
+        // try GET no-cors (if remote server blocks CORS this often resolves to opaque response)
+        const get = await fetch(tool.url, { method: 'GET', mode: 'no-cors', cache: 'no-store' });
+        // if fetch resolves without throwing we assume reachable (opaque)
+        statusEl.textContent = 'up (opaque)';
+        statusEl.className = 'badge up';
+        spin.style.display = 'none';
+        return;
+      } catch(e){
+        // try image ping
+      }
 
-      // Header info
-      document.getElementById('userEmail').textContent = user.email ?? '—';
-      document.getElementById('userMeta').textContent = `UID: ${user.id}`;
-
-      // Profile card
-      document.getElementById('avatar').src = user.user_metadata?.avatar_url || "assets/default-avatar.png";
-      document.getElementById('fullName').textContent = user.user_metadata?.full_name || "—";
-      document.getElementById('userEmail2').textContent = user.email || "—";
-      document.getElementById('uid').textContent = user.id;
-      document.getElementById('providers').textContent = user.app_metadata?.providers?.join(", ") || "—";
-      document.getElementById('lastLogin').textContent = user.last_sign_in_at || "—";
-
-      // Safe JSON dump
-      const safe = sanitizeSession(session);
-      document.getElementById('sessionPre').textContent = JSON.stringify(safe, null, 2);
-
-      // Sign out
-      document.getElementById('signout').addEventListener('click', async (e)=>{
-        e.preventDefault();
-        await supabaseClient.auth.signOut();
-        location.href = 'login.html';
+      // image ping fallback
+      return new Promise(resolve => {
+        const img = new Image();
+        let done = false;
+        img.onload = () => { if(done) return; done = true; statusUp(statusEl, spin); resolve(); };
+        img.onerror = () => { if(done) return; done = true; statusDown(statusEl, spin); resolve(); };
+        // add cache buster
+        img.src = tool.url.replace(/\/$/, '') + '/favicon.ico?_=' + Date.now();
+        // timeout
+        setTimeout(()=>{ if(done) return; done = true; statusDown(statusEl, spin); resolve(); }, 5000);
       });
+    }
+
+    function statusUp(el, spin){
+      el.textContent = 'up';
+      el.className = 'badge up';
+      if(spin) spin.style.display = 'none';
+    }
+    function statusDown(el, spin){
+      el.textContent = 'down';
+      el.className = 'badge down';
+      if(spin) spin.style.display = 'none';
+    }
+
+    // render list and run checks
+    function initTools(){
+      const container = document.getElementById('tools');
+      TOOLS.forEach(t => {
+        container.appendChild(makeToolRow(t));
+        // small delay between checks to avoid spike
+        setTimeout(()=>checkTool(t), 200);
+      });
+    }
+
+    // load user session and show minimal profile
+    (async function(){
+      try {
+        const { data } = await supabaseClient.auth.getSession();
+        const session = data?.session ?? null;
+        if(!session){ location.href = 'login.html'; return; }
+
+        const user = session.user;
+        document.getElementById('userEmail').textContent = user.email || '—';
+        document.getElementById('userMeta').textContent = `UID: ${user.id}`;
+        document.getElementById('uidSmall').textContent = user.id;
+        document.getElementById('avatar').src = user.user_metadata?.avatar_url || 'assets/default-avatar.png';
+        document.getElementById('fullName').textContent = user.user_metadata?.full_name || '—';
+        document.getElementById('emailSmall').textContent = user.email || '—';
+        document.getElementById('providersSmall').textContent = (user.app_metadata?.providers || []).join(', ') || '—';
+
+        document.getElementById('signout').addEventListener('click', async (e)=>{
+          e.preventDefault();
+          await supabaseClient.auth.signOut();
+          location.href = 'login.html';
+        });
+
+        initTools();
+      } catch(err){
+        console.error('session error', err);
+        location.href = 'login.html';
+      }
     })();
   </script>
 </body>
