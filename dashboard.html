@@ -1,13 +1,24 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Dashboard — NovaMind</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Dashboard — NovaMind</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    #sessionPre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      background: #0b1220;
+      color: #d6e6f3;
+      padding: 16px;
+      border-radius: 8px;
+      max-height: 70vh;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+  </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/auth.js"></script>
-<!-- then any inline page-specific script -->
 
 <body>
   <div class="dash-wrap">
@@ -46,25 +57,47 @@
     </main>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script>
-(async function(){
-  // require auth
-  const { data } = await supabaseClient.auth.getSession();
-  const session = data?.session ?? null;
-  if(!session){ location.href = 'login.html'; return; }
-  document.getElementById('userEmail').textContent = session.user.email ?? '—';
-  document.getElementById('userMeta').textContent = `UID: ${session.user.id}`;
-  document.getElementById('sessionPre').textContent = JSON.stringify(session, null, 2);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    function sanitizeSession(session){
+      const s = JSON.parse(JSON.stringify(session));
+      // remove sensitive tokens
+      delete s.provider_token;
+      delete s.access_token;
+      delete s.refresh_token;
 
-  document.getElementById('signout').addEventListener('click', async (e)=>{
-    e.preventDefault();
-    await supabaseClient.auth.signOut();
-    location.href = 'login.html';
-  });
-})();
-</script>
+      // scrub any long strings
+      function scrub(obj){
+        for(const k in obj){
+          if(typeof obj[k] === 'string' && obj[k].length > 200){
+            obj[k] = obj[k].slice(0,60) + '...[truncated]';
+          } else if(typeof obj[k] === 'object' && obj[k] !== null){
+            scrub(obj[k]);
+          }
+        }
+      }
+      scrub(s);
+      return s;
+    }
+
+    (async function(){
+      const { data } = await supabaseClient.auth.getSession();
+      const session = data?.session ?? null;
+      if(!session){ location.href = 'login.html'; return; }
+
+      document.getElementById('userEmail').textContent = session.user.email ?? '—';
+      document.getElementById('userMeta').textContent = `UID: ${session.user.id}`;
+
+      const safe = sanitizeSession(session);
+      document.getElementById('sessionPre').textContent = JSON.stringify(safe, null, 2);
+
+      document.getElementById('signout').addEventListener('click', async (e)=>{
+        e.preventDefault();
+        await supabaseClient.auth.signOut();
+        location.href = 'login.html';
+      });
+    })();
+  </script>
 </body>
 </html>
-
