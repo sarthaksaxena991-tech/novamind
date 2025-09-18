@@ -48,16 +48,12 @@
       </header>
 
       <section class="cards">
-        <!-- Tools column (main) -->
         <div class="card">
           <h3>Available tools</h3>
           <p class="small">Status shows whether the tool endpoint responded. CORS may affect checks for external hosts.</p>
-          <ul id="tools" class="tools-list">
-            <!-- injected -->
-          </ul>
+          <ul id="tools" class="tools-list"></ul>
         </div>
 
-        <!-- Optional: profile small card -->
         <div class="card">
           <h3>Profile</h3>
           <div style="display:flex;gap:12px;align-items:center">
@@ -73,16 +69,18 @@
     </main>
   </div>
 
+  <!-- supabase sdk + client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
+
   <script>
-    // list of tools to show and check
+    // tools list
     const TOOLS = [
       { id: 'tool1', name: 'Tool 1', url: 'https://tool1.novomind.in' },
       { id: 'tool2', name: 'Tool 2', url: 'https://tool2.novomind.in' },
       { id: 'tool3', name: 'Tool 3', url: 'https://tool3.novomind.in' }
     ];
 
-    // create li DOM
     function makeToolRow(tool){
       const li = document.createElement('li');
       li.id = 'row-' + tool.id;
@@ -95,12 +93,10 @@
       return li;
     }
 
-    // try HEAD fetch first. fallback to GET no-cors. final fallback ping via Image.
     async function checkTool(tool){
       const statusEl = document.getElementById('status-' + tool.id);
       const spin = document.getElementById('spin-' + tool.id);
       try {
-        // attempt HEAD (may be blocked by CORS)
         const head = await fetch(tool.url, { method: 'HEAD', mode: 'cors', cache: 'no-store' });
         if(head && (head.ok || head.status < 400)){
           statusEl.textContent = 'up';
@@ -108,62 +104,60 @@
           spin.style.display = 'none';
           return;
         }
-      } catch(e){
-        // ignored, try next
-      }
-
+      } catch(e){}
       try {
-        // try GET no-cors (if remote server blocks CORS this often resolves to opaque response)
-        const get = await fetch(tool.url, { method: 'GET', mode: 'no-cors', cache: 'no-store' });
-        // if fetch resolves without throwing we assume reachable (opaque)
+        await fetch(tool.url, { method: 'GET', mode: 'no-cors', cache: 'no-store' });
         statusEl.textContent = 'up (opaque)';
         statusEl.className = 'badge up';
         spin.style.display = 'none';
         return;
-      } catch(e){
-        // try image ping
-      }
-
-      // image ping fallback
+      } catch(e){}
       return new Promise(resolve => {
         const img = new Image();
         let done = false;
         img.onload = () => { if(done) return; done = true; statusUp(statusEl, spin); resolve(); };
         img.onerror = () => { if(done) return; done = true; statusDown(statusEl, spin); resolve(); };
-        // add cache buster
         img.src = tool.url.replace(/\/$/, '') + '/favicon.ico?_=' + Date.now();
-        // timeout
         setTimeout(()=>{ if(done) return; done = true; statusDown(statusEl, spin); resolve(); }, 5000);
       });
     }
 
-    function statusUp(el, spin){
-      el.textContent = 'up';
-      el.className = 'badge up';
-      if(spin) spin.style.display = 'none';
-    }
-    function statusDown(el, spin){
-      el.textContent = 'down';
-      el.className = 'badge down';
-      if(spin) spin.style.display = 'none';
-    }
+    function statusUp(el, spin){ el.textContent = 'up'; el.className = 'badge up'; if(spin) spin.style.display = 'none'; }
+    function statusDown(el, spin){ el.textContent = 'down'; el.className = 'badge down'; if(spin) spin.style.display = 'none'; }
 
-    // render list and run checks
     function initTools(){
       const container = document.getElementById('tools');
-      TOOLS.forEach(t => {
+      TOOLS.forEach((t,i) => {
         container.appendChild(makeToolRow(t));
-        // small delay between checks to avoid spike
-        setTimeout(()=>checkTool(t), 200);
+        setTimeout(()=>checkTool(t), 200 * i);
       });
     }
 
-    // load user session and show minimal profile
+    // parse OAuth redirect tokens if landed here directly after Google
+    async function handleOAuthReturnOnDashboard(){
+      try {
+        // parse tokens from URL and store session in client
+        const { error } = await supabaseClient.auth.getSessionFromUrl({ storeSession: true });
+        if(error) console.warn('getSessionFromUrl:', error.message || error);
+        // remove token fragments from URL
+        history.replaceState(null, '', window.location.pathname);
+      } catch(e){
+        console.warn('getSessionFromUrl failed', e);
+      }
+    }
+
     (async function(){
       try {
+        // try parse tokens first (if OAuth redirected directly to dashboard)
+        await handleOAuthReturnOnDashboard();
+
+        // then read session
         const { data } = await supabaseClient.auth.getSession();
         const session = data?.session ?? null;
-        if(!session){ location.href = 'login.html'; return; }
+        if(!session){
+          location.href = 'login.html';
+          return;
+        }
 
         const user = session.user;
         document.getElementById('userEmail').textContent = user.email || '—';
