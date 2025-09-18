@@ -17,6 +17,7 @@
       font-size: 13px;
       line-height: 1.4;
     }
+    .profile p { margin: 4px 0; }
   </style>
 </head>
 
@@ -42,9 +43,22 @@
 
       <section class="cards">
         <div class="card glow">
-          <h3>Active session</h3>
+          <h3>Profile</h3>
+          <div class="profile">
+            <img id="avatar" src="assets/default-avatar.png" alt="avatar" style="width:64px;height:64px;border-radius:50%;margin-bottom:10px;">
+            <p><strong>Name:</strong> <span id="fullName">—</span></p>
+            <p><strong>Email:</strong> <span id="userEmail2">—</span></p>
+            <p><strong>UID:</strong> <span id="uid">—</span></p>
+            <p><strong>Provider(s):</strong> <span id="providers">—</span></p>
+            <p><strong>Last sign in:</strong> <span id="lastLogin">—</span></p>
+          </div>
+        </div>
+
+        <div class="card glow">
+          <h3>Active session (safe dump)</h3>
           <pre id="sessionPre">Loading session...</pre>
         </div>
+
         <div class="card glow">
           <h3>Quick tools</h3>
           <ul class="list">
@@ -61,23 +75,12 @@
   <script src="js/supabase-client.js"></script>
   <script>
     function sanitizeSession(session){
-      const s = JSON.parse(JSON.stringify(session));
-      // remove sensitive tokens
-      delete s.provider_token;
-      delete s.access_token;
-      delete s.refresh_token;
-
-      // scrub any long strings
-      function scrub(obj){
-        for(const k in obj){
-          if(typeof obj[k] === 'string' && obj[k].length > 200){
-            obj[k] = obj[k].slice(0,60) + '...[truncated]';
-          } else if(typeof obj[k] === 'object' && obj[k] !== null){
-            scrub(obj[k]);
-          }
-        }
-      }
-      scrub(s);
+      const s = {
+        expires_in: session.expires_in,
+        expires_at: session.expires_at,
+        token_type: session.token_type,
+        user: session.user
+      };
       return s;
     }
 
@@ -86,12 +89,25 @@
       const session = data?.session ?? null;
       if(!session){ location.href = 'login.html'; return; }
 
-      document.getElementById('userEmail').textContent = session.user.email ?? '—';
-      document.getElementById('userMeta').textContent = `UID: ${session.user.id}`;
+      const user = session.user;
 
+      // Header info
+      document.getElementById('userEmail').textContent = user.email ?? '—';
+      document.getElementById('userMeta').textContent = `UID: ${user.id}`;
+
+      // Profile card
+      document.getElementById('avatar').src = user.user_metadata?.avatar_url || "assets/default-avatar.png";
+      document.getElementById('fullName').textContent = user.user_metadata?.full_name || "—";
+      document.getElementById('userEmail2').textContent = user.email || "—";
+      document.getElementById('uid').textContent = user.id;
+      document.getElementById('providers').textContent = user.app_metadata?.providers?.join(", ") || "—";
+      document.getElementById('lastLogin').textContent = user.last_sign_in_at || "—";
+
+      // Safe JSON dump
       const safe = sanitizeSession(session);
       document.getElementById('sessionPre').textContent = JSON.stringify(safe, null, 2);
 
+      // Sign out
       document.getElementById('signout').addEventListener('click', async (e)=>{
         e.preventDefault();
         await supabaseClient.auth.signOut();
@@ -101,3 +117,4 @@
   </script>
 </body>
 </html>
+
