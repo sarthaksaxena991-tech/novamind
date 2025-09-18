@@ -6,10 +6,6 @@
 <title>Login — NovaMind</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="js/supabase-client.js"></script>
-<script src="js/auth.js"></script>
-<!-- then any inline page-specific script -->
 
 <body>
   <div class="auth-wrap">
@@ -23,11 +19,13 @@
         <label>Password<input id="li-password" type="password" required></label>
         <div class="row">
           <button class="btn primary" type="submit">Login</button>
-           <a href="forgot-reset.html">Forgot password?</a>
-
+          <a href="forgot-reset.html">Forgot password?</a>
         </div>
         <p class="small">No account? <a href="signup.html">Sign up</a></p>
       </form>
+
+      <hr>
+      <button id="googleSignIn" class="btn">Sign in with Google</button>
     </div>
   </div>
 
@@ -35,6 +33,23 @@
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
 <script>
+async function handleOAuthRedirect(){
+  try {
+    // parse tokens from redirect if coming from Google OAuth
+    const { error } = await supabaseClient.auth.getSessionFromUrl({ storeSession: true });
+    if(error) console.warn("OAuth parse error:", error.message);
+    // clean up URL (remove hash/query)
+    history.replaceState(null, '', window.location.pathname);
+  } catch(e){ console.warn("getSessionFromUrl failed", e); }
+}
+
+async function checkSession(){
+  const { data } = await supabaseClient.auth.getSession();
+  if(data?.session){
+    location.href = 'dashboard.html';
+  }
+}
+
 document.getElementById('loginForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   clearAlert();
@@ -42,13 +57,28 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
   const password = document.getElementById('li-password').value;
   if(!email || !password) return showAlert('Email and password required');
   const r = await supaSignIn(email,password);
-  if(r.error) showAlert(r.error.message || r.error,'error'); else {
+  if(r.error) showAlert(r.error.message || r.error,'error'); 
+  else {
     showAlert('Login successful','success');
     setTimeout(()=>location.href='dashboard.html',800);
   }
 });
+
+document.getElementById('googleSignIn').addEventListener('click', async ()=>{
+  await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/login.html'
+      // you can also set '/dashboard.html' but must add that in Supabase Redirect URLs
+    }
+  });
+});
+
+// init
+(async ()=>{
+  await handleOAuthRedirect();
+  await checkSession();
+})();
 </script>
 </body>
 </html>
-
-
