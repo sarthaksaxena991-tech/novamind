@@ -20,10 +20,8 @@
     .badge{padding:6px 10px;border-radius:999px;font-size:12px}
     .up{background:#0b6b2b;color:#dff6e6}
     .down{background:#6b1111;color:#ffe6e6}
-    .unknown{background:#444;color:#fff}
+    .coming{background:#444;color:#fff}
     .small{font-size:12px;color:#9fb2c8}
-    .spinner{width:14px;height:14px;border:2px solid #fff;border-radius:50%;border-right-color:transparent;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
-    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -48,12 +46,13 @@
       </header>
 
       <section class="cards">
+        <!-- Tools column -->
         <div class="card">
           <h3>Available tools</h3>
-          <p class="small">Status shows whether the tool endpoint responded. CORS may affect checks for external hosts.</p>
           <ul id="tools" class="tools-list"></ul>
         </div>
 
+        <!-- Profile card -->
         <div class="card">
           <h3>Profile</h3>
           <div style="display:flex;gap:12px;align-items:center">
@@ -69,89 +68,55 @@
     </main>
   </div>
 
-  <!-- supabase sdk + client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
 
   <script>
-    // tools list
+    // tools definition
     const TOOLS = [
-      { id: 'tool1', name: 'Tool 1', url: 'https://tool1.novomind.in' },
-      { id: 'tool2', name: 'Tool 2', url: 'https://tool2.novomind.in' },
-      { id: 'tool3', name: 'Tool 3', url: 'https://tool3.novomind.in' }
+      { id: 'enhancer', name: 'Image Enhancer', url: 'https://novamind-imae-enhancer.onrender.com/', status: 'live' },
+      { id: 'tool2', name: 'Tool 2', url: '#', status: 'coming' },
+      { id: 'tool3', name: 'Tool 3', url: '#', status: 'coming' }
     ];
 
     function makeToolRow(tool){
       const li = document.createElement('li');
       li.id = 'row-' + tool.id;
       const left = document.createElement('div');
-      left.innerHTML = `<strong>${tool.name}</strong><div class="small">${tool.url}</div>`;
+      if(tool.status === 'live'){
+        left.innerHTML = `<a href="${tool.url}" target="_blank"><strong>${tool.name}</strong></a>`;
+      } else {
+        left.innerHTML = `<strong>${tool.name}</strong>`;
+      }
       const right = document.createElement('div');
-      right.innerHTML = `<span class="spinner" id="spin-${tool.id}"></span><span id="status-${tool.id}" class="badge unknown">checking</span>`;
+      if(tool.status === 'live'){
+        right.innerHTML = `<span class="badge up">Available</span>`;
+      } else {
+        right.innerHTML = `<span class="badge coming">Coming soon</span>`;
+      }
       li.appendChild(left);
       li.appendChild(right);
       return li;
     }
 
-    async function checkTool(tool){
-      const statusEl = document.getElementById('status-' + tool.id);
-      const spin = document.getElementById('spin-' + tool.id);
-      try {
-        const head = await fetch(tool.url, { method: 'HEAD', mode: 'cors', cache: 'no-store' });
-        if(head && (head.ok || head.status < 400)){
-          statusEl.textContent = 'up';
-          statusEl.className = 'badge up';
-          spin.style.display = 'none';
-          return;
-        }
-      } catch(e){}
-      try {
-        await fetch(tool.url, { method: 'GET', mode: 'no-cors', cache: 'no-store' });
-        statusEl.textContent = 'up (opaque)';
-        statusEl.className = 'badge up';
-        spin.style.display = 'none';
-        return;
-      } catch(e){}
-      return new Promise(resolve => {
-        const img = new Image();
-        let done = false;
-        img.onload = () => { if(done) return; done = true; statusUp(statusEl, spin); resolve(); };
-        img.onerror = () => { if(done) return; done = true; statusDown(statusEl, spin); resolve(); };
-        img.src = tool.url.replace(/\/$/, '') + '/favicon.ico?_=' + Date.now();
-        setTimeout(()=>{ if(done) return; done = true; statusDown(statusEl, spin); resolve(); }, 5000);
-      });
-    }
-
-    function statusUp(el, spin){ el.textContent = 'up'; el.className = 'badge up'; if(spin) spin.style.display = 'none'; }
-    function statusDown(el, spin){ el.textContent = 'down'; el.className = 'badge down'; if(spin) spin.style.display = 'none'; }
-
     function initTools(){
       const container = document.getElementById('tools');
-      TOOLS.forEach((t,i) => {
-        container.appendChild(makeToolRow(t));
-        setTimeout(()=>checkTool(t), 200 * i);
-      });
+      TOOLS.forEach(t => container.appendChild(makeToolRow(t)));
     }
 
-    // parse OAuth redirect tokens if landed here directly after Google
+    // handle OAuth redirect if landed directly
     async function handleOAuthReturnOnDashboard(){
       try {
-        // parse tokens from URL and store session in client
         const { error } = await supabaseClient.auth.getSessionFromUrl({ storeSession: true });
-        if(error) console.warn('getSessionFromUrl:', error.message || error);
-        // remove token fragments from URL
+        if(error) console.warn('getSessionFromUrl:', error.message);
         history.replaceState(null, '', window.location.pathname);
-      } catch(e){
-        console.warn('getSessionFromUrl failed', e);
-      }
+      } catch(e){ console.warn('getSessionFromUrl failed', e); }
     }
 
     (async function(){
       try {
-        // try parse tokens first (if OAuth redirected directly to dashboard)
         await handleOAuthReturnOnDashboard();
 
-        // then read session
         const { data } = await supabaseClient.auth.getSession();
         const session = data?.session ?? null;
         if(!session){
